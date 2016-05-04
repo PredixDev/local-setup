@@ -11,10 +11,10 @@
 ### On Mac OS X
 
 * Open Terminal
-* Navigate to the extracted folder `$ cd <path to folder`
+* Navigate to the extracted folder `$ cd <path to folder>`
 * Run `$ ./setup-mac.sh`
 
 ### On Windows
 * Open Command Prompt as Administrator (Right click 'Run as Administrator')
 * Navigate to the extracted folder `> cd [path to folder]`
-* Run `> setup-windows.sh`
+* Run `> setup-windows.bat`
