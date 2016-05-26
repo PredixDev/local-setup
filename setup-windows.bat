@@ -13,9 +13,11 @@ choco install -y curl
 choco install -y python2
 choco install -y springtoolsuite
 
-REM Reload environment variables to make sure the script can find npm
+REM Reload environment variables to make sure the script can find cf & npm
 resetvars.vbs
 call "%TEMP%\resetvars.bat"
+
+cf install-plugin https://github.com/PredixDev/cf-predix/releases/download/1.0.0/predix_win64.exe
 
 npm install -g bower
 npm install -g grunt-cli
