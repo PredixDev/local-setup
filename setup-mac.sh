@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 echo "--------------------------------------------------------------"
 echo "This script will install tools required for Predix development"
@@ -80,7 +81,7 @@ brew tap cloudfoundry/tap
 brew_install cf-cli cf
 cf -v
 # Install CF Predix plugin
-cf install-plugin https://github.com/PredixDev/cf-predix/releases/download/1.0.0/predix_osx
+yes | cf install-plugin https://github.com/PredixDev/cf-predix/releases/download/1.0.0/predix_osx
 
 # Install JDK
 echo "--------------------------------------------------------------"
