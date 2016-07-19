@@ -81,7 +81,10 @@ brew tap cloudfoundry/tap
 brew_install cf-cli cf
 cf -v
 # Install CF Predix plugin
-yes | cf install-plugin https://github.com/PredixDev/cf-predix/releases/download/1.0.0/predix_osx
+cf plugins | grep Predix > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  cf install-plugin -f https://github.com/PredixDev/cf-predix/releases/download/1.0.0/predix_osx
+fi
 
 # Install JDK
 echo "--------------------------------------------------------------"
