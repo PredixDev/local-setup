@@ -31,6 +31,20 @@ brew_install() {
   fi
 }
 
+setup_for_workshop=0
+setup_uaac=0
+
+while getopts ":wu" opt; do
+  case $opt in
+    w)
+      setup_for_workshop=1
+      ;;
+    u)
+      setup_uaac=1
+      ;;
+  esac
+done
+
 # Ensure bash profile exists
 if [ ! -e ~/.bash_profile ]
 then
@@ -50,31 +64,6 @@ else
 fi
 brew tap caskroom/cask
 
-# Install tools for managing ruby
-echo "--------------------------------------------------------------"
-brew_install rbenv
-brew_install ruby-build
-# Add rbenv to bash
-grep -q -F 'rbenv init' ~/.bash_profile || echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile
-source ~/.bash_profile
-# Install latest ruby
-RUBY_VERSION=`egrep "^\s+\d+\.\d+\.\d+$" <(rbenv install -l) | tail -1 | tr -d '[[:space:]]'`
-echo "--------------------------------------------------------------"
-if grep -q "$RUBY_VERSION" <(ruby -v)
-then
-  echo "Already running latest version of ruby"
-else
-  echo "Installing latest ruby"
-  rbenv install $RUBY_VERSION
-  rbenv global $RUBY_VERSION
-fi
-ruby -v
-
-# Install UAAC
-echo "--------------------------------------------------------------"
-echo "Installing UAAC gem"
-gem install cf-uaac
-
 # Install CF-Cli
 echo "--------------------------------------------------------------"
 brew tap cloudfoundry/tap
@@ -89,16 +78,47 @@ if [ $? -ne 0 ]; then
 fi
 set -e
 
+# Install Git
+echo "--------------------------------------------------------------"
+brew_install git
+git --version
+
+if [ $setup_uaac -eq 1 ]; then
+  # Install tools for managing ruby
+  echo "--------------------------------------------------------------"
+  brew_install rbenv
+  brew_install ruby-build
+  # Add rbenv to bash
+  grep -q -F 'rbenv init' ~/.bash_profile || echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile
+  source ~/.bash_profile
+  # Install latest ruby
+  RUBY_VERSION=`egrep "^\s+\d+\.\d+\.\d+$" <(rbenv install -l) | tail -1 | tr -d '[[:space:]]'`
+  echo "--------------------------------------------------------------"
+  if grep -q "$RUBY_VERSION" <(ruby -v)
+  then
+    echo "Already running latest version of ruby"
+  else
+    echo "Installing latest ruby"
+    rbenv install $RUBY_VERSION
+    rbenv global $RUBY_VERSION
+  fi
+  ruby -v
+
+  # Install UAAC
+  echo "--------------------------------------------------------------"
+  echo "Installing UAAC gem"
+  gem install cf-uaac
+fi
+
+if [ $setup_for_workshop -eq 1 ]; then
+  exit 0
+fi
+
 # Install JDK
 echo "--------------------------------------------------------------"
 echo "Installing latest JDK"
 brew cask install java
 javac -version
-
-# Install Git
-echo "--------------------------------------------------------------"
-brew_install git
-git --version
 
 # Install Maven
 echo "--------------------------------------------------------------"
