@@ -20,6 +20,9 @@ cf install-plugin -f https://github.com/PredixDev/cf-predix/releases/download/1.
 choco install -y git
 CALL :CHECK_FAIL
 
+choco install -y putty
+CALL :CHECK_FAIL
+
 IF %flag%=="-w" exit /b 0
 
 choco install -y jdk
