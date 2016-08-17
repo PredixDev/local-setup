@@ -46,3 +46,5 @@ Tool | Flag | Notes
 [cURL] (https://curl.haxx.se) | /curl |
 [Python2] (https://www.python.org) | /python2 |
 [Node.js] (https://nodejs.org), [Bower] (http://bower.io/), [Grunt CLI] (http://gruntjs.com) | /nodejs |
+
+[![Analytics](https://ga-beacon.appspot.com/UA-82773213-1/local-setup/readme?pixel)](https://github.com/PredixDev)
