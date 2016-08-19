@@ -1,4 +1,5 @@
 @ECHO OFF
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 GOTO START
 
@@ -118,10 +119,7 @@ IF %install[cf]% EQU 1 (
   resetvars.vbs
   call "%TEMP%\resetvars.bat"
 
-  cf plugins | findstr "Predix" >$null 2>&1
-  IF NOT %errorlevel% EQU 0 (
-    cf install-plugin -f https://github.com/PredixDev/cf-predix/releases/download/1.0.0/predix_win64.exe
-  )
+  ( cf plugins | findstr "Predix" >$null 2>&1 ) || cf install-plugin -f https://github.com/PredixDev/cf-predix/releases/download/1.0.0/predix_win64.exe
 )
 
 IF %install[putty]% EQU 1 CALL :CHOCO_INSTALL putty
@@ -140,8 +138,6 @@ IF %install[nodejs]% EQU 1 (
   resetvars.vbs
   call "%TEMP%\resetvars.bat"
 
-  bower >$null 2>&1
-  IF %errorlevel% EQU 9009 npm install -g bower
-  grunt >$null 2>&1
-  IF %errorlevel% EQU 9009 npm install -g grunt-cli
+  bower --version >$null 2>&1 || npm install -g bower
+  grunt --version >$null 2>&1 || npm install -g grunt-cli
 )
