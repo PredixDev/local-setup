@@ -1,11 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "--------------------------------------------------------------"
-echo "This script will install tools required for Predix development"
-echo "You may be asked to provide your password during the installation process"
-echo "--------------------------------------------------------------"
-
 git=0
 cf=1
 jdk=2
@@ -16,14 +11,49 @@ uaac=6
 
 declare -a install
 
-prefix_to_path() {
+function prefix_to_path() {
   if [[ ":$PATH:" != *":$1:"* ]]; then
     echo 'export PATH="$1${PATH:+":$PATH"}"' >> ~/.bash_profile
     source ~/.bash_profile
   fi
 }
 
-brew_install() {
+function check_internet() {
+  set +e
+  echo ""
+  echo "Checking internet connection..."
+  curl "http://google.com" > /dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    echo Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy
+    exit 1
+  fi
+  echo "OK"
+  echo ""
+  set -e
+}
+
+function check_bash_profile() {
+  # Ensure bash profile exists
+  if [ ! -e ~/.bash_profile ]; then
+    printf "#!/bin/bash\n" >> ~/.bash_profile
+  fi
+
+  # This is required for brew to work
+  prefix_to_path /usr/local/bin
+}
+
+function install_brew_cask() {
+  # Install brew and cask
+  if which brew > /dev/null; then
+    echo "brew already installed, tapping cask"
+  else
+    echo "Installing brew and cask"
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  fi
+  brew tap caskroom/cask
+}
+
+function brew_install() {
   echo "--------------------------------------------------------------"
   TOOL=$1
   COMMAND=$1
@@ -39,7 +69,7 @@ brew_install() {
   fi
 }
 
-brew_cask_install() {
+function brew_cask_install() {
   echo "--------------------------------------------------------------"
   TOOL=$1
 
@@ -51,7 +81,7 @@ brew_cask_install() {
   fi
 }
 
-install_everything() {
+function install_everything() {
   install[git]=1
   install[cf]=1
   install[jdk]=1
@@ -61,7 +91,7 @@ install_everything() {
   install[uaac]=0 # Install UAAC only if the --uaac flag is provided
 }
 
-install_nothing() {
+function install_nothing() {
   install[git]=0
   install[cf]=0
   install[jdk]=0
@@ -71,55 +101,12 @@ install_nothing() {
   install[uaac]=0
 }
 
-if [ -z "$1" ]; then
-  echo "Installing all the tools..."
-  install_everything
-else
-  echo "Installing only tools specified in parameters..."
-  install_nothing
-  while [ ! -z "$1" ]; do
-    [ "$1" == "--git" ] && install[git]=1
-    [ "$1" == "--cf" ] && install[cf]=1
-    [ "$1" == "--jdk" ] && install[jdk]=1
-    [ "$1" == "--maven" ] && install[maven]=1
-    [ "$1" == "--sts" ] && install[sts]=1
-    [ "$1" == "--nodejs" ] && install[nodejs]=1
-    [ "$1" == "--uaac" ] && install[uaac]=1
-    shift
-  done
-fi
-
-echo "Checking internet connection..."
-
-if [ $? -ne 0 ]; then
-  echo Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy
-  exit 1
-fi
-echo "OK"
-
-# Ensure bash profile exists
-if [ ! -e ~/.bash_profile ]; then
-  printf "#!/bin/bash\n" >> ~/.bash_profile
-fi
-
-# This is required for brew to work
-prefix_to_path /usr/local/bin
-
-# Install brew and cask
-if which brew > /dev/null; then
-  echo "brew already installed, tapping cask"
-else
-  echo "Installing brew and cask"
-  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-fi
-brew tap caskroom/cask
-
-if [ ${install[git]} -eq 1 ]; then
+function install_git() {
   brew_install git
   git --version
-fi
+}
 
-if [ ${install[cf]} -eq 1 ]; then
+function install_cf() {
   brew tap cloudfoundry/tap
   brew_install cf-cli cf
   cf -v
@@ -132,24 +119,19 @@ if [ ${install[cf]} -eq 1 ]; then
     cf install-plugin -f https://github.com/PredixDev/cf-predix/releases/download/1.0.0/predix_osx
   fi
   set -e
-fi
+}
 
-if [ ${install[jdk]} -eq 1 ]; then
+function install_jdk() {
   brew_cask_install java
   javac -version
-fi
+}
 
-
-if [ ${install[maven]} -eq 1 ]; then
+function install_maven() {
   brew_install maven mvn
   mvn -v
-fi
+}
 
-if [ ${install[sts]} -eq 1 ]; then
-  brew_cask_install sts
-fi
-
-if [ ${install[nodejs]} -eq 1 ]; then
+function install_nodejs() {
   brew_install node
   node -v
   brew_install npm
@@ -161,9 +143,9 @@ if [ ${install[nodejs]} -eq 1 ]; then
 
   type grunt > /dev/null || npm install -g grunt-cli
   grunt --version
-fi
+}
 
-if [ ${install[uaac]} -eq 1 ]; then
+function install_uaac() {
   # Install tools for managing ruby
   brew_install rbenv
   brew_install ruby-build
@@ -185,4 +167,63 @@ if [ ${install[uaac]} -eq 1 ]; then
   echo "--------------------------------------------------------------"
   echo "Installing UAAC gem"
   gem install cf-uaac
-fi
+}
+
+function run_setup() {
+  echo "--------------------------------------------------------------"
+  echo "This script will install tools required for Predix development"
+  echo "You may be asked to provide your password during the installation process"
+  echo "--------------------------------------------------------------"
+  echo ""
+  if [ -z "$1" ]; then
+    echo "Installing all the tools..."
+    install_everything
+  else
+    echo "Installing only tools specified in parameters..."
+    install_nothing
+    while [ ! -z "$1" ]; do
+      [ "$1" == "--git" ] && install[git]=1
+      [ "$1" == "--cf" ] && install[cf]=1
+      [ "$1" == "--jdk" ] && install[jdk]=1
+      [ "$1" == "--maven" ] && install[maven]=1
+      [ "$1" == "--sts" ] && install[sts]=1
+      [ "$1" == "--nodejs" ] && install[nodejs]=1
+      [ "$1" == "--uaac" ] && install[uaac]=1
+      shift
+    done
+  fi
+
+  check_internet
+  check_bash_profile
+  install_brew_cask
+
+  if [ ${install[git]} -eq 1 ]; then
+    install_git
+  fi
+
+  if [ ${install[cf]} -eq 1 ]; then
+    install_cf
+  fi
+
+  if [ ${install[jdk]} -eq 1 ]; then
+    install_jdk
+  fi
+
+  if [ ${install[maven]} -eq 1 ]; then
+    install_maven
+  fi
+
+  if [ ${install[sts]} -eq 1 ]; then
+    brew_cask_install sts
+  fi
+
+  if [ ${install[nodejs]} -eq 1 ]; then
+    install_nodejs
+  fi
+
+  if [ ${install[uaac]} -eq 1 ]; then
+    install_uaac
+  fi
+}
+
+run_setup $@
