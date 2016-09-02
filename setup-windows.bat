@@ -29,36 +29,53 @@ GOTO loop_process_args
 :end_loop_process_args
 GOTO :eof
 
+:RELOAD_ENV
+  resetvars.vbs
+  CALL "%TEMP%\resetvars.bat" >$null
+GOTO :eof
+
 :CHECK_INTERNET_CONNECTION
 ECHO Checking internet connection...
 @powershell -Command "(new-object net.webclient).DownloadString('http://www.google.com')" >$null 2>&1
-IF NOT %errorlevel% EQU 0 (
+IF NOT !errorlevel! EQU 0 (
   ECHO Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy
-  pause
-  exit /b %errorlevel%
+  exit /b !errorlevel!
 )
 ECHO OK
 GOTO :eof
 
 :INSTALL_CHOCO
-choco >$null 2>&1
-IF %errorlevel% EQU 9009 (
+where choco >$null 2>&1
+IF NOT !errorlevel! EQU 0 (
   ECHO Installing chocolatey...
-  @powershell -NoProfile -ExecutionPolicy unrestricted -Command "(iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))) >$null 2>&1" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
+  @powershell -NoProfile -ExecutionPolicy unrestricted -Command "(iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))) >$null 2>&1" && SET PATH="%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
   CALL :CHECK_FAIL
+  CALL :RELOAD_ENV
 )
 GOTO :eof
 
 :CHOCO_INSTALL
-choco install -y --allow-empty-checksums %*
-CALL :CHECK_FAIL
-GOTO :eof
+SETLOCAL
+SET tool=%1
+SET cmd=%1
+IF NOT "%2"=="" (
+  SET cmd=%2
+)
+where !cmd! >$null 2>&1
+IF NOT !errorlevel! EQU 0 (
+  choco install -y --allow-empty-checksums %1
+  CALL :CHECK_FAIL
+  CALL :RELOAD_ENV
+) ELSE (
+  ECHO %1 already installed
+  ECHO.
+)
+ENDLOCAL & GOTO :eof
 
 :CHECK_FAIL
-IF NOT %errorlevel% EQU 0 (
+IF NOT !errorlevel! EQU 0 (
   ECHO FAILED
-  pause
-  exit /b %errorlevel%
+  exit /b !errorlevel!
 )
 GOTO :eof
 
@@ -102,42 +119,47 @@ SET python2=7
 SET nodejs=8
 
 CALL :PROCESS_ARGS %*
+CALL :RELOAD_ENV
 
 CALL :CHECK_INTERNET_CONNECTION
 CALL :INSTALL_CHOCO
 
-REM Reload environment variables to make sure the script can find choco
-resetvars.vbs
-call "%TEMP%\resetvars.bat"
+IF !install[git]! EQU 1 CALL :CHOCO_INSTALL git
 
-IF %install[git]% EQU 1 CALL :CHOCO_INSTALL git
+IF !install[cf]! EQU 1 (
+  CALL :CHOCO_INSTALL cloudfoundry-cli cf
 
-IF %install[cf]% EQU 1 (
-  CALL :CHOCO_INSTALL cloudfoundry-cli
+  SETLOCAL
+  IF EXIST "%ProgramFiles(x86)%" (
+    SET filename=predix_win64.exe
+  ) ELSE (
+  SET filename=predix_win32.exe
+  )
+  ( cf plugins | findstr "Predix" >$null 2>&1 ) || cf install-plugin -f https://github.com/PredixDev/cf-predix/releases/download/1.0.0/!filename!
+  ENDLOCAL
 
-  REM Reload environment variables to make sure the script can find cf
-  resetvars.vbs
-  call "%TEMP%\resetvars.bat"
-
-  ( cf plugins | findstr "Predix" >$null 2>&1 ) || cf install-plugin -f https://github.com/PredixDev/cf-predix/releases/download/1.0.0/predix_win64.exe
+  IF NOT !errorlevel! EQU 0 (
+    ECHO If you are behind a corporate proxy, set the 'http_proxy' and 'https_proxy' environment variables.
+    ECHO Commands to set proxy:
+    ECHO set http_proxy="http://<proxy-host>:<proxy-port>"
+    ECHO set https_proxy="http://<proxy-host>:<proxy-port>"
+    exit /b !errorlevel!
+  )
 )
 
-IF %install[putty]% EQU 1 CALL :CHOCO_INSTALL putty
-IF %install[jdk]% EQU 1 CALL :CHOCO_INSTALL jdk
-REM Using this version because the latest chocolatey package (3.3.3) fails
-IF %install[maven]% EQU 1 CALL :CHOCO_INSTALL maven --version 3.2.5
+IF !install[putty]! EQU 1 CALL :CHOCO_INSTALL putty
+IF !install[jdk]! EQU 1 CALL :CHOCO_INSTALL jdk javac
+IF !install[maven]! EQU 1 CALL :CHOCO_INSTALL maven mvn
 REM TODO - Uncomment once the chocolatey package is fixed
-REM IF %install[sts]% EQU 1 CALL :CHOCO_INSTALL springtoolsuite
-IF %install[curl]% EQU 1 CALL :CHOCO_INSTALL curl
-IF %install[python2]% EQU 1 CALL :CHOCO_INSTALL python2
+REM IF !install[sts]! EQU 1 CALL :CHOCO_INSTALL springtoolsuite
+IF !install[curl]! EQU 1 CALL :CHOCO_INSTALL curl
+IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
 
-IF %install[nodejs]% EQU 1 (
-  CALL :CHOCO_INSTALL nodejs.install
-
-  REM Reload environment variables to make sure the script can find npm
-  resetvars.vbs
-  call "%TEMP%\resetvars.bat"
-
-  bower --version >$null 2>&1 || npm install -g bower
-  grunt --version >$null 2>&1 || npm install -g grunt-cli
+IF !install[nodejs]! EQU 1 CALL :CHOCO_INSTALL nodejs.install node
+CALL :RELOAD_ENV
+IF !install[nodejs]! EQU 1 (
+  where bower >$null 2>&1 && where grunt >$null 2>&1
+  IF NOT !errorlevel! EQU 0 (
+    npm install -g bower grunt-cli
+  )
 )
