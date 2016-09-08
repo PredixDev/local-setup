@@ -22,7 +22,7 @@ Tool | Flag | Notes
 [brew] (http://brew.sh), [cask] (http://caskroom.io) | | Required to manage the installation of tools
 [Git] (https://git-scm.com) | --git |
 [cf-cli] (http://docs.cloudfoundry.org/cf-cli) | --cf |
-[Oracle JDK] (http://www.oracle.com/technetwork/java/javase/downloads/index.html) | --jdk |
+[Java SE Development Kit (JDK)] (http://www.oracle.com/technetwork/java/javase/downloads/index.html) | --jdk |
 [Maven] (https://maven.apache.org) | --maven |
 [Eclipse STS] (https://spring.io/tools/sts) | --sts |
 [Node.js] (https://nodejs.org), [Bower] (http://bower.io/), [Grunt CLI] (http://gruntjs.com) | --nodejs |
@@ -40,7 +40,7 @@ Tool | Flag | Notes
 [Git] (https://git-scm.com) | /git |
 [cf-cli] (http://docs.cloudfoundry.org/cf-cli) | /cf |
 [putty] (http://www.putty.org) | /putty |
-[Oracle JDK] (http://www.oracle.com/technetwork/java/javase/downloads/index.html) | /jdk |
+[Java SE Development Kit (JDK)] (http://www.oracle.com/technetwork/java/javase/downloads/index.html) | /jdk |
 [Maven] (https://maven.apache.org) | /maven |
 [Eclipse STS] (https://spring.io/tools/sts) | /sts |
 [cURL] (https://curl.haxx.se) | /curl |
