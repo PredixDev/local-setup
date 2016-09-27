@@ -24,7 +24,7 @@ function check_internet() {
   echo "Checking internet connection..."
   curl "http://google.com" > /dev/null 2>&1
   if [ $? -ne 0 ]; then
-    echo Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy
+    echo "Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy"
     exit 1
   fi
   echo "OK"

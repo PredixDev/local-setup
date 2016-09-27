@@ -1,6 +1,8 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
 
+SET RESETVARS=https://raw.githubusercontent.com/PredixDev/local-setup/master/resetvars.vbs
+
 GOTO START
 
 :PROCESS_ARGS
@@ -29,8 +31,14 @@ GOTO loop_process_args
 :end_loop_process_args
 GOTO :eof
 
+:GET_DEPENDENCIES
+  ECHO Getting Dependencies
+  ECHO !RESETVARS!
+  @powershell -Command "(new-object net.webclient).DownloadFile('!RESETVARS!','%TEMP%\resetvars.vbs')"
+GOTO :eof
+
 :RELOAD_ENV
-  resetvars.vbs
+  "%TEMP%\resetvars.vbs"
   CALL "%TEMP%\resetvars.bat" >$null
 GOTO :eof
 
@@ -104,6 +112,8 @@ SET install[nodejs]=1
 GOTO :eof
 
 :START
+PUSHD "%~dp0"
+
 ECHO --------------------------------------------------------------
 ECHO This script will install tools required for Predix development
 ECHO --------------------------------------------------------------
@@ -119,9 +129,9 @@ SET python2=7
 SET nodejs=8
 
 CALL :PROCESS_ARGS %*
-CALL :RELOAD_ENV
 
 CALL :CHECK_INTERNET_CONNECTION
+CALL :GET_DEPENDENCIES
 CALL :INSTALL_CHOCO
 
 IF !install[git]! EQU 1 CALL :CHOCO_INSTALL git
@@ -163,3 +173,5 @@ IF !install[nodejs]! EQU 1 (
     npm install -g bower grunt-cli
   )
 )
+
+POPD

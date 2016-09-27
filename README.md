@@ -2,20 +2,19 @@
 
 Scripts to install the tools required for development on the Predix Platform.
 
-## Download the scripts
-
-* Download the scripts from https://github.com/PredixDev/local-setup/archive/master.zip
-
-* Extract the zip on your computer
-
 ## Installation
 
 ### On Mac OS X
 
-* Open Terminal
-* Navigate to the extracted folder `$ cd <path to folder>`
-* Run `$ ./setup-mac.sh` to install all the standard tools
-* You can choose to install selected tools by providing flag for the corresponding tool. For example: to install git and cf-cli only run `./setup-mac.sh --git --cf`
+* Run the command below in a terminal window to install all the standard tools
+```
+bash <( curl https://raw.githubusercontent.com/PredixDev/local-setup/master/setup-mac.sh )
+```
+* You can choose to install selected tools by providing flags for the corresponding tools.
+For example: to install git and cf-cli only run
+```
+bash <( curl https://raw.githubusercontent.com/PredixDev/local-setup/master/setup-mac.sh ) --git --cf
+```
 
 Tool | Flag | Notes
 --- | --- | ---
@@ -29,10 +28,15 @@ Tool | Flag | Notes
 [rbenv] (http://rbenv.org), [ruby-build] (https://github.com/rbenv/ruby-build), [ruby] (https://www.ruby-lang.org), [cf-uaac] (https://github.com/cloudfoundry/cf-uaac) | --uaac | This is not installed by default
 
 ### On Windows
-* Open Command Prompt as Administrator (Right click 'Run as Administrator')
-* Navigate to the extracted folder `> cd [path to folder]`
-* Run `> setup-windows.bat` to install all the standard tools
-* You can choose to install selected tools by providing flag for the corresponding tool. For example: to install git and cf-cli only run `setup-windows.bat /git /cf`
+* Open a Command Window as Administrator (Right click 'Run as Administrator') and run the command below
+```
+@powershell -Command "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/PredixDev/local-setup/master/setup-windows.bat','%TEMP%\setup-windows.bat')" && "%TEMP%\setup-windows.bat"
+```
+* You can choose to install selected tools by providing flags for the corresponding tools.
+For example: to install git and cf-cli only run
+```
+@powershell -Command "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/PredixDev/local-setup/master/setup-windows.bat','%TEMP%\setup-windows.bat')" && "%TEMP%\setup-windows.bat /git /cf"
+```
 
 Tool | Flag | Notes
 --- | --- | ---
