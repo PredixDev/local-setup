@@ -143,6 +143,9 @@ function install_nodejs() {
 
   type grunt > /dev/null || npm install -g grunt-cli
   grunt --version
+
+  type gulp > /dev/null || npm install -g gulp-cli
+  gulp -v
 }
 
 function install_uaac() {
