@@ -24,8 +24,9 @@ IF /I "%1"=="/jdk" SET install[jdk]=1
 IF /I "%1"=="/maven" SET install[maven]=1
 IF /I "%1"=="/sts" SET install[sts]=1
 IF /I "%1"=="/curl" SET install[curl]=1
-IF /I "%1"=="/python2" SET install[python2]=1
 IF /I "%1"=="/nodejs" SET install[nodejs]=1
+IF /I "%1"=="/python2" SET install[python2]=1
+IF /I "%1"=="/python3" SET install[python3]=1
 SHIFT
 GOTO loop_process_args
 :end_loop_process_args
@@ -94,8 +95,9 @@ SET install[jdk]=0
 SET install[maven]=0
 SET install[sts]=0
 SET install[curl]=0
-SET install[python2]=0
 SET install[nodejs]=0
+SET install[python2]=0
+SET install[python3]=0
 GOTO :eof
 
 :INSTALL_EVERYTHING
@@ -106,8 +108,9 @@ SET install[jdk]=1
 SET install[maven]=1
 SET install[sts]=1
 SET install[curl]=1
-SET install[python2]=1
 SET install[nodejs]=1
+SET install[python2]=1
+SET install[python3]=1
 GOTO :eof
 
 :START
@@ -124,8 +127,9 @@ SET jdk=3
 SET maven=4
 SET sts=5
 SET curl=6
-SET python2=7
-SET nodejs=8
+SET nodejs=7
+SET python2=8
+SET python3=9
 
 CALL :PROCESS_ARGS %*
 
@@ -157,12 +161,11 @@ IF !install[cf]! EQU 1 (
 )
 
 IF !install[putty]! EQU 1 CALL :CHOCO_INSTALL putty
-IF !install[jdk]! EQU 1 CALL :CHOCO_INSTALL jdk javac
+IF !install[jdk]! EQU 1 CALL :CHOCO_INSTALL jdk8 javac
 IF !install[maven]! EQU 1 CALL :CHOCO_INSTALL maven mvn
 REM TODO - Uncomment once the chocolatey package is fixed
 REM IF !install[sts]! EQU 1 CALL :CHOCO_INSTALL springtoolsuite
 IF !install[curl]! EQU 1 CALL :CHOCO_INSTALL curl
-IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
 
 IF !install[nodejs]! EQU 1 CALL :CHOCO_INSTALL nodejs.install node
 CALL :RELOAD_ENV
@@ -172,5 +175,8 @@ IF !install[nodejs]! EQU 1 (
     npm install -g bower grunt-cli
   )
 )
+
+IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
+IF !install[python3]! EQU 1 CALL :CHOCO_INSTALL python3 python3
 
 POPD

@@ -7,7 +7,8 @@ jdk=2
 maven=3
 sts=4
 nodejs=5
-uaac=6
+python3=6
+uaac=7
 
 declare -a install
 
@@ -88,6 +89,7 @@ function install_everything() {
   install[maven]=1
   install[sts]=1
   install[nodejs]=1
+  install[python3]=1
   install[uaac]=0 # Install UAAC only if the --uaac flag is provided
 }
 
@@ -98,6 +100,7 @@ function install_nothing() {
   install[maven]=0
   install[sts]=0
   install[nodejs]=0
+  install[python3]=0
   install[uaac]=0
 }
 
@@ -145,6 +148,11 @@ function install_nodejs() {
   grunt --version
 }
 
+function install_python3() {
+  brew_install python3
+  python3 --version
+}
+
 function install_uaac() {
   # Install tools for managing ruby
   brew_install rbenv
@@ -188,6 +196,7 @@ function run_setup() {
       [ "$1" == "--maven" ] && install[maven]=1
       [ "$1" == "--sts" ] && install[sts]=1
       [ "$1" == "--nodejs" ] && install[nodejs]=1
+      [ "$1" == "--python3" ] && install[python3]=1
       [ "$1" == "--uaac" ] && install[uaac]=1
       shift
     done
@@ -219,6 +228,10 @@ function run_setup() {
 
   if [ ${install[nodejs]} -eq 1 ]; then
     install_nodejs
+  fi
+
+  if [ ${install[python3]} -eq 1 ]; then
+    install_python3
   fi
 
   if [ ${install[uaac]} -eq 1 ]; then
