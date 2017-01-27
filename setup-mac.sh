@@ -85,13 +85,14 @@ function brew_cask_install() {
 }
 
 function install_everything() {
+  # For front end environment Maven, Spring STS and Python are not required
   install[git]=1
   install[cf]=1
   install[jdk]=1
-  install[maven]=1
-  install[sts]=1
+  install[maven]=0
+  install[sts]=0
   install[nodejs]=1
-  install[python3]=1
+  install[python3]=0
   install[uaac]=0 # Install UAAC only if the --uaac flag is provided
   install[redis]=1
   install[wct]=1
@@ -146,6 +147,10 @@ function install_nodejs() {
   brew_install npm
   npm -v
 
+  npm set prefix “/usr/local”
+  npm set registry “http://registry.npmjs.org”
+  npm set strict-ssl false” 
+
   type bower > /dev/null || npm install -g bower
   echo -ne "\nbower "
   bower -v
@@ -155,12 +160,16 @@ function install_nodejs() {
 }
 
 function install_redis() {
+  # Install Redis
   brew_install redis
   redis --version
 }
 
 function install_wct() {
-  npm install wct
+  # Install the Polymer web-components-tester
+  npm install -g https://github.com/Polymer/web-component-tester.git#v4.2.2
+  sudo chown -R $USER /usr/local
+  npm install web-component-tester-istanbul -g 
 }
 
 function install_python3() {
