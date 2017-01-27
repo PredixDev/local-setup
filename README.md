@@ -8,12 +8,12 @@ Scripts to install the tools required for development on the Predix Platform.
 
 * Run the command below in a terminal window to install all the standard tools
 ```
-bash <( curl https://raw.githubusercontent.com/PredixDev/local-setup/master/setup-mac.sh )
+bash <( curl https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/master/setup-mac.sh )
 ```
 * You can choose to install selected tools by providing flags for the corresponding tools.
 For example: to install git and cf-cli only run
 ```
-bash <( curl https://raw.githubusercontent.com/PredixDev/local-setup/master/setup-mac.sh ) --git --cf
+bash <( curl https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/master/setup-mac.sh ) --git --cf
 ```
 
 Tool | Flag | Notes
