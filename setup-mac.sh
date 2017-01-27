@@ -9,6 +9,8 @@ sts=4
 nodejs=5
 python3=6
 uaac=7
+redis=8
+wct=9
 
 declare -a install
 
@@ -91,6 +93,8 @@ function install_everything() {
   install[nodejs]=1
   install[python3]=1
   install[uaac]=0 # Install UAAC only if the --uaac flag is provided
+  install[redis]=1
+  install[wct]=1
 }
 
 function install_nothing() {
@@ -102,6 +106,8 @@ function install_nothing() {
   install[nodejs]=0
   install[python3]=0
   install[uaac]=0
+  install[redis]=0
+  install[wct]=0
 }
 
 function install_git() {
@@ -135,7 +141,7 @@ function install_maven() {
 }
 
 function install_nodejs() {
-  brew_install node
+  brew_install node 5.11.1
   node -v
   brew_install npm
   npm -v
@@ -146,6 +152,15 @@ function install_nodejs() {
 
   type grunt > /dev/null || npm install -g grunt-cli
   grunt --version
+}
+
+function install_redis() {
+  brew_install redis
+  redis --version
+}
+
+function install_wct() {
+  npm install wct
 }
 
 function install_python3() {
@@ -198,6 +213,8 @@ function run_setup() {
       [ "$1" == "--nodejs" ] && install[nodejs]=1
       [ "$1" == "--python3" ] && install[python3]=1
       [ "$1" == "--uaac" ] && install[uaac]=1
+      [ "$1" == "--redis" ] && install[redis]=1
+      [ "$1" == "--wct" ] && install[wct]=1
       shift
     done
   fi
@@ -228,6 +245,14 @@ function run_setup() {
 
   if [ ${install[nodejs]} -eq 1 ]; then
     install_nodejs
+  fi
+
+  if [ ${install[redis]} -eq 1 ]; then
+    install_redis
+  fi
+
+  if [ ${install[wct]} -eq 1 ]; then
+    install_wct
   fi
 
   if [ ${install[python3]} -eq 1 ]; then
