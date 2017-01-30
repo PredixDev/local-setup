@@ -152,40 +152,40 @@ function install_cf() {
 
 function install_jdk() {
   echo "--------------------------------------------------------------"
-  echo "Installing Java Development Kit"
+  echo "Installing Java Development Kit..."
   brew_cask_install java
   javac -version
 }
 
 function install_maven() {
   echo "--------------------------------------------------------------"
-  echo "Installing Maven"
+  echo "Installing Maven..."
   brew_install maven mvn
   mvn -v
 }
 
 function install_nodejs() {
   echo "--------------------------------------------------------------"
-  echo "Installing NodeJs v5.11.1"
+  echo "Installing NodeJs v5.11.1 ..."
   brew_install node 5.11.1
   node -v
   brew_install npm
   npm -v
 
   echo "--------------------------------------------------------------"
-  echo "Setting NPM environment variables"
+  echo "Setting NPM environment variables..."
   npm set prefix “/usr/local”
   npm set registry “http://registry.npmjs.org”
   npm set strict-ssl false” 
 
   echo "--------------------------------------------------------------"
-  echo "Installing Bower"
+  echo "Installing Bower..."
   type bower > /dev/null || npm install -g bower
   echo -ne "\nbower "
   bower -v
 
   echo "--------------------------------------------------------------"
-  echo "Installing Grunt"
+  echo "Installing Grunt..."
   type grunt > /dev/null || npm install -g grunt-cli
   grunt --version
 }
@@ -195,7 +195,7 @@ function install_redis() {
   check_rbenv
   # Install Redis
   echo "--------------------------------------------------------------"
-  echo "Installing Redis"
+  echo "Installing Redis..."
   gem install redis -v 3.0.7
   redis-server --version
 }
@@ -203,7 +203,7 @@ function install_redis() {
 function install_wct() {
   # Install the Polymer web-components-tester
   echo "--------------------------------------------------------------"
-  echo "Installing Polymer web component tester"
+  echo "Installing Polymer web component tester..."
   npm install -g https://github.com/Polymer/web-component-tester.git#v4.2.2
   sudo chown -R $USER /usr/local
   npm install web-component-tester-istanbul -g 
@@ -211,7 +211,7 @@ function install_wct() {
 
 function install_python3() {
   echo "--------------------------------------------------------------"
-  echo "Installing Python"
+  echo "Installing Python..."
   brew_install python3
   python3 --version
 }
@@ -221,7 +221,7 @@ function install_uaac() {
   check_rbenv
   # Install UAAC
   echo "--------------------------------------------------------------"
-  echo "Installing UAAC with gem"
+  echo "Installing UAAC with gem..."
   gem install cf-uaac
 }
 

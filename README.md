@@ -10,6 +10,7 @@ Scripts to install the tools required for development on the Predix Platform.
 ```
 bash <( curl https://github.com/predix-edgemanager-ui/local-setup/master/setup-mac-fe.sh )
 
+For test on the develop branch,
 bash <( curl https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/develop/setup-mac-fe.sh )
 ```
 * You can choose to install selected tools by providing flags for the corresponding tools.
@@ -37,7 +38,7 @@ Tool | Flag | Notes
 ```
 bash <( curl https://github.com/predix-edgemanager-ui/local-setup/master/setup-mac-be.sh )
 
-
+For test on the develop branch,
 bash <( curl https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/develop/setup-mac-be.sh )
 ```
 * You can choose to install selected tools by providing flags for the corresponding tools.
