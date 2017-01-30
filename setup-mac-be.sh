@@ -175,7 +175,7 @@ function install_redis() {
   # Install Redis
   echo "--------------------------------------------------------------"
   echo "Installing Redis"
-  brew_install redis
+  gem install redis -v 3.0.7
   redis-server --version
 }
 
@@ -196,6 +196,13 @@ function install_python3() {
 }
 
 function install_uaac() {
+  # Install UAAC
+  echo "--------------------------------------------------------------"
+  echo "Installing UAAC with gem"
+  gem install cf-uaac
+}
+
+function check_rbenv() {
   # Install tools for managing ruby
   brew_install rbenv
   brew_install ruby-build
@@ -212,11 +219,6 @@ function install_uaac() {
     rbenv global $RUBY_VERSION
   fi
   ruby -v
-
-  # Install UAAC
-  echo "--------------------------------------------------------------"
-  echo "Installing UAAC with gem"
-  gem install cf-uaac
 }
 
 function run_setup() {
@@ -249,6 +251,7 @@ function run_setup() {
   check_internet
   check_bash_profile
   install_brew_cask
+  check_rbenv
 
   if [ ${install[git]} -eq 1 ]; then
     install_git
