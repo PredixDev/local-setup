@@ -141,8 +141,8 @@ function install_jdk() {
 function install_maven() {
   echo "--------------------------------------------------------------"
   echo "Installing Maven"
-  brew_install maven mvn
-  mvn -v
+  brew_install maven
+  mvn -version
 }
 
 function install_nodejs() {
