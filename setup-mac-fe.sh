@@ -56,6 +56,25 @@ function install_brew_cask() {
   brew tap caskroom/cask
 }
 
+function check_rbenv() {
+  # Install tools for managing ruby
+  brew_install rbenv
+  brew_install ruby-build
+  # Add rbenv to bash
+  grep -q -F 'rbenv init' ~/.bash_profile || echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile && eval "$(rbenv init -)"
+  # Install latest ruby
+  RUBY_VERSION=`egrep "^\s+\d+\.\d+\.\d+$" <(rbenv install -l) | tail -1 | tr -d '[[:space:]]'`
+  echo "--------------------------------------------------------------"
+  if grep -q "$RUBY_VERSION" <(ruby -v); then
+    echo "Already running latest version of ruby"
+  else
+    echo "Installing latest version of Ruby"
+    rbenv install $RUBY_VERSION
+    rbenv global $RUBY_VERSION
+  fi
+  ruby -v
+}
+
 function brew_install() {
   echo "--------------------------------------------------------------"
   TOOL=$1
@@ -202,25 +221,6 @@ function install_uaac() {
   gem install cf-uaac
 }
 
-function check_rbenv() {
-  # Install tools for managing ruby
-  brew_install rbenv
-  brew_install ruby-build
-  # Add rbenv to bash
-  grep -q -F 'rbenv init' ~/.bash_profile || echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile && eval "$(rbenv init -)"
-  # Install latest ruby
-  RUBY_VERSION=`egrep "^\s+\d+\.\d+\.\d+$" <(rbenv install -l) | tail -1 | tr -d '[[:space:]]'`
-  echo "--------------------------------------------------------------"
-  if grep -q "$RUBY_VERSION" <(ruby -v); then
-    echo "Already running latest version of ruby"
-  else
-    echo "Installing latest version of Ruby"
-    rbenv install $RUBY_VERSION
-    rbenv global $RUBY_VERSION
-  fi
-  ruby -v
-}
-
 function run_setup() {
   echo "--------------------------------------------------------------"
   echo "This script will install tools required for Predix development"
@@ -251,7 +251,7 @@ function run_setup() {
   check_internet
   check_bash_profile
   install_brew_cask
-  #check_rbenv
+  check_rbenv
 
   if [ ${install[git]} -eq 1 ]; then
     install_git
