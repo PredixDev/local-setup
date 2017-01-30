@@ -8,7 +8,6 @@ Scripts to install the tools required for development on the Predix Platform.
 
 * Run the command below in a terminal window to install all the standard tools for frontend development (Includes latest Ruby, Brew, Git, Cloud Foundry, Predix User Access Control, NodeJS - Bower & Grunt, Redis, Polymer Web Component Tester, Java JDK)
 ```
-
 bash <( curl https://github.com/predix-edgemanager-ui/local-setup/master/setup-mac-fe.sh )
 ```
 * You can choose to install selected tools by providing flags for the corresponding tools.
@@ -55,7 +54,6 @@ Tool | Flag | Notes
 [rbenv] (http://rbenv.org), [ruby-build] (https://github.com/rbenv/ruby-build), [ruby] (https://www.ruby-lang.org) | | 
 
 
-
 ### On Windows
 * Open a Command Window as Administrator (Right click 'Run as Administrator') and run the command below
 ```
@@ -82,3 +80,4 @@ Tool | Flag | Notes
 [Python3] (https://www.python.org) | /python3 |
 
 [![Analytics](https://ga-beacon.appspot.com/UA-82773213-1/local-setup/readme?pixel)](https://github.com/PredixDev)
+
