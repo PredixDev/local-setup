@@ -172,6 +172,8 @@ function install_nodejs() {
 }
 
 function install_redis() {
+  # check for proper ruby environment
+  check_rbenv
   # Install Redis
   echo "--------------------------------------------------------------"
   echo "Installing Redis"
@@ -196,6 +198,8 @@ function install_python3() {
 }
 
 function install_uaac() {
+  # check for proper ruby environment
+  check_rbenv
   # Install UAAC
   echo "--------------------------------------------------------------"
   echo "Installing UAAC with gem"
