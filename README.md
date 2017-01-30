@@ -9,6 +9,8 @@ Scripts to install the tools required for development on the Predix Platform.
 * Run the command below in a terminal window to install all the standard tools for frontend development (Includes latest Ruby, Brew, Git, Cloud Foundry, Predix User Access Control, NodeJS - Bower & Grunt, Redis, Polymer Web Component Tester, Java JDK)
 ```
 bash <( curl https://github.com/predix-edgemanager-ui/local-setup/master/setup-mac-fe.sh )
+
+bash <( curl https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/develop/setup-mac-fe.sh )
 ```
 * You can choose to install selected tools by providing flags for the corresponding tools.
 For example: to install git and cf-cli only run
@@ -34,6 +36,9 @@ Tool | Flag | Notes
 * Run the command below in a terminal window to install all the standard backend development tools (Includes latest Ruby, Brew, Git, Cloud Foundry, Predix User Access Control, Java JDK, Maven, Eclipse STS, Python3)
 ```
 bash <( curl https://github.com/predix-edgemanager-ui/local-setup/master/setup-mac-be.sh )
+
+
+bash <( curl https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/develop/setup-mac-be.sh )
 ```
 * You can choose to install selected tools by providing flags for the corresponding tools.
 For example: to install git and cf-cli only run
