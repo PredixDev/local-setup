@@ -199,14 +199,16 @@ function install_wct() {
 
 function install_python3() {
   echo "--------------------------------------------------------------"
-  echo "Installing Python..."
+  echo "Installing Python 3..."
   brew_install python3
   python3 --version
 }
 
 function install_uaac() {
+  # check for proper ruby environment
   check_rbenv
   # Install UAAC
+  echo "--------------------------------------------------------------"
   echo "Installing UAAC with gem..."
   gem install cf-uaac
 }

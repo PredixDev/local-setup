@@ -56,25 +56,6 @@ function install_brew_cask() {
   brew tap caskroom/cask
 }
 
-function check_rbenv() {
-  # Install tools for managing ruby
-  brew_install rbenv
-  brew_install ruby-build
-  # Add rbenv to bash
-  grep -q -F 'rbenv init' ~/.bash_profile || echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile && eval "$(rbenv init -)"
-  # Install latest ruby
-  RUBY_VERSION=`egrep "^\s+\d+\.\d+\.\d+$" <(rbenv install -l) | tail -1 | tr -d '[[:space:]]'`
-  echo "--------------------------------------------------------------"
-  if grep -q "$RUBY_VERSION" <(ruby -v); then
-    echo "Already running latest version of ruby"
-  else
-    echo "Installing latest version of Ruby"
-    rbenv install $RUBY_VERSION
-    rbenv global $RUBY_VERSION
-  fi
-  ruby -v
-}
-
 function brew_install() {
   echo "--------------------------------------------------------------"
   TOOL=$1
@@ -131,16 +112,22 @@ function install_nothing() {
 }
 
 function install_git() {
+  echo "--------------------------------------------------------------"
+  echo "Installing Git..."
   brew_install git
   git --version
 }
 
 function install_cf() {
+  echo "--------------------------------------------------------------"
+  echo "Installing Cloud Foundry..."
   brew tap cloudfoundry/tap
   brew_install cf-cli cf
   cf -v
 
   # Install CF Predix plugin
+  echo "--------------------------------------------------------------"
+  echo "Installing Predix plugin..."
   set +e
   cf plugins | grep Predix > /dev/null 2>&1
   if [ $? -ne 0 ]; then
@@ -149,7 +136,6 @@ function install_cf() {
   fi
   set -e
 }
-
 function install_jdk() {
   echo "--------------------------------------------------------------"
   echo "Installing Java Development Kit..."
@@ -158,6 +144,9 @@ function install_jdk() {
 }
 
 function install_maven() {
+  echo "--------------------------------------------------------------"
+  echo "Checking for brew update..."
+  brew update
   echo "--------------------------------------------------------------"
   echo "Installing Maven..."
   brew_install maven mvn
@@ -211,7 +200,7 @@ function install_wct() {
 
 function install_python3() {
   echo "--------------------------------------------------------------"
-  echo "Installing Python..."
+  echo "Installing Python 3..."
   brew_install python3
   python3 --version
 }
@@ -223,6 +212,28 @@ function install_uaac() {
   echo "--------------------------------------------------------------"
   echo "Installing UAAC with gem..."
   gem install cf-uaac
+}
+
+function check_rbenv() {
+  # Install tools for managing ruby
+  echo "--------------------------------------------------------------"
+  # check for proper ruby environment
+  echo "Checking for latest Ruby..."
+  brew_install rbenv
+  brew_install ruby-build
+  # Add rbenv to bash
+  grep -q -F 'rbenv init' ~/.bash_profile || echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile && eval "$(rbenv init -)"
+  # Install latest ruby
+  RUBY_VERSION=`egrep "^\s+\d+\.\d+\.\d+$" <(rbenv install -l) | tail -1 | tr -d '[[:space:]]'`
+  echo "--------------------------------------------------------------"
+  if grep -q "$RUBY_VERSION" <(ruby -v); then
+    echo "Already running latest version of ruby"
+  else
+    echo "Installing latest version of Ruby"
+    rbenv install $RUBY_VERSION
+    rbenv global $RUBY_VERSION
+  fi
+  ruby -v
 }
 
 function run_setup() {
