@@ -251,7 +251,7 @@ function run_setup() {
   check_internet
   check_bash_profile
   install_brew_cask
-  check_rbenv
+  #check_rbenv
 
   if [ ${install[git]} -eq 1 ]; then
     install_git
