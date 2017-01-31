@@ -1,0 +1,8 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "http.proxyStrictSSL": false,
+    "editor.tabSize": 2,
+    "files.autoSave": "onFocusChange",
+    "editor.renderWhitespace": "all",
+    "editor.wrappingColumn": 0
+  }
