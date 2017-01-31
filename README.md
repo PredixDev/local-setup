@@ -57,12 +57,12 @@ Tool | Flag | Notes
 ### On Windows
 * Open a Command Window as Administrator (Right click 'Run as Administrator') and run the command below
 ```
-@powershell -Command "(new-object net.webclient).DownloadFile('https://github.com/predix-edgemanager-ui/local-setup/master/setup-windows.bat','%TEMP%\setup-windows.bat')" && "%TEMP%\setup-windows.bat"
+@powershell -Command "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/master/setup-windows.bat','%TEMP%\setup-windows.bat')" && "%TEMP%\setup-windows.bat"
 ```
 * You can choose to install selected tools by providing flags for the corresponding tools.
 For example: to install git and cf-cli only run
 ```
-@powershell -Command "(new-object net.webclient).DownloadFile('https://github.com/predix-edgemanager-ui/local-setup/master/setup-windows.bat','%TEMP%\setup-windows.bat')" && "%TEMP%\setup-windows.bat /git /cf"
+@powershell -Command "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/master/setup-windows.bat','%TEMP%\setup-windows.bat')" && "%TEMP%\setup-windows.bat /git /cf"
 ```
 
 Tool | Flag | Notes
