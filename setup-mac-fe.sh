@@ -163,9 +163,9 @@ function install_nodejs() {
 
   echo "--------------------------------------------------------------"
   echo "Setting NPM environment variables..."
-  npm set prefix “/usr/local”
-  npm set registry “http://registry.npmjs.org”
-  npm set strict-ssl false” 
+  npm set prefix '/usr/local'
+  npm set registry 'http://registry.npmjs.org'
+  npm set strict-ssl false
 
   echo "--------------------------------------------------------------"
   echo "Installing Bower..."
