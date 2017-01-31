@@ -183,8 +183,9 @@ function install_redis() {
   check_rbenv
   # Install Redis
   echo "--------------------------------------------------------------"
-  echo "Installing Redis..."
-  gem install redis -v 3.0.7
+  echo "Installing Redis v3.0.7..."
+  # gem install redis -v 3.0.7
+  gem install redis --version 3.0.7
   redis-server --version
 }
 
