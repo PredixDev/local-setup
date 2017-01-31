@@ -1,5 +1,3 @@
-
-
 #!/bin/bash
 set -e
 
@@ -77,7 +75,6 @@ function brew_install() {
 function brew_cask_install() {
   echo "--------------------------------------------------------------"
   TOOL=$1
-
   if brew cask list | grep $TOOL > /dev/null; then
     echo "$TOOL already installed"
   else
@@ -91,13 +88,13 @@ function install_everything() {
   install[git]=1
   install[cf]=1
   install[jdk]=1
-  install[maven]=0
-  install[sts]=0
-  install[nodejs]=1
-  install[python3]=0
+  install[maven]=1
+  install[sts]=1
+  install[nodejs]=0
+  install[python3]=1
   install[uaac]=0 # Install UAAC only if the --uaac flag is provided
-  install[redis]=1
-  install[wct]=1
+  install[redis]=0
+  install[wct]=0
 }
 
 function install_nothing() {
@@ -114,16 +111,22 @@ function install_nothing() {
 }
 
 function install_git() {
+  echo "--------------------------------------------------------------"
+  echo "Installing Git..."
   brew_install git
   git --version
 }
 
 function install_cf() {
+  echo "--------------------------------------------------------------"
+  echo "Installing Cloud Foundry..."
   brew tap cloudfoundry/tap
   brew_install cf-cli cf
   cf -v
 
   # Install CF Predix plugin
+  echo "--------------------------------------------------------------"
+  echo "Installing Predix plugin..."
   set +e
   cf plugins | grep Predix > /dev/null 2>&1
   if [ $? -ne 0 ]; then
@@ -134,73 +137,101 @@ function install_cf() {
 }
 
 function install_jdk() {
+  echo "--------------------------------------------------------------"
+  echo "Installing Java Development Kit..."
   brew_cask_install java
   javac -version
 }
 
 function install_maven() {
-  brew_install maven mvn
-  mvn -v
+  echo "--------------------------------------------------------------"
+  echo "Checking for brew update..."
+  brew update
+  echo "Installing Maven"
+  brew_install maven
+  mvn -version
 }
 
 function install_nodejs() {
+  echo "--------------------------------------------------------------"
+  echo "Installing NodeJs v5.11.1 ..."
   brew_install node 5.11.1
   node -v
   brew_install npm
   npm -v
 
-  npm set prefix “/usr/local”
-  npm set registry “http://registry.npmjs.org”
-  npm set strict-ssl false” 
+  echo "--------------------------------------------------------------"
+  echo "Setting NPM environment variables..."
+  npm set prefix '/usr/local'
+  npm set registry 'http://registry.npmjs.org'
+  npm set strict-ssl false
 
+  echo "--------------------------------------------------------------"
+  echo "Installing Bower..."
   type bower > /dev/null || npm install -g bower
   echo -ne "\nbower "
   bower -v
 
+  echo "--------------------------------------------------------------"
+  echo "Installing Grunt..."
   type grunt > /dev/null || npm install -g grunt-cli
   grunt --version
 }
 
 function install_redis() {
+  # check for proper ruby environment
+  check_rbenv
   # Install Redis
-  brew_install redis
-  redis --version
+  echo "--------------------------------------------------------------"
+  echo "Installing Redis..."
+  gem install redis -v 3.0.7
+  redis-server --version
 }
 
 function install_wct() {
   # Install the Polymer web-components-tester
-  npm install -g https://github.com/Polymer/web-component-tester.git#v4.2.2
+  echo "--------------------------------------------------------------"
+  echo "Installing Polymer web component tester..."
+  npm install -g https://github.com/Polymer/web-component-tester.git#v4.2.2
   sudo chown -R $USER /usr/local
   npm install web-component-tester-istanbul -g 
 }
 
 function install_python3() {
+  echo "--------------------------------------------------------------"
+  echo "Installing Python 3..."
   brew_install python3
   python3 --version
 }
 
 function install_uaac() {
+  # check for proper ruby environment
+  check_rbenv
+  # Install UAAC
+  echo "--------------------------------------------------------------"
+  echo "Installing UAAC with gem..."
+  gem install cf-uaac
+}
+
+function check_rbenv() {
   # Install tools for managing ruby
+  echo "--------------------------------------------------------------"
+  # check for proper ruby environment
+  echo "Checking for latest Ruby..."
   brew_install rbenv
   brew_install ruby-build
   # Add rbenv to bash
   grep -q -F 'rbenv init' ~/.bash_profile || echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile && eval "$(rbenv init -)"
   # Install latest ruby
   RUBY_VERSION=`egrep "^\s+\d+\.\d+\.\d+$" <(rbenv install -l) | tail -1 | tr -d '[[:space:]]'`
-  echo "--------------------------------------------------------------"
   if grep -q "$RUBY_VERSION" <(ruby -v); then
     echo "Already running latest version of ruby"
   else
-    echo "Installing latest ruby"
+    echo "Installing latest version of Ruby"
     rbenv install $RUBY_VERSION
     rbenv global $RUBY_VERSION
   fi
   ruby -v
-
-  # Install UAAC
-  echo "--------------------------------------------------------------"
-  echo "Installing UAAC gem"
-  gem install cf-uaac
 }
 
 function run_setup() {
@@ -233,6 +264,7 @@ function run_setup() {
   check_internet
   check_bash_profile
   install_brew_cask
+  check_rbenv
 
   if [ ${install[git]} -eq 1 ]; then
     install_git
