@@ -185,7 +185,8 @@ function install_redis() {
   # Install Redis
   echo "--------------------------------------------------------------"
   echo "Installing Redis..."
-  gem install redis -v 3.0.7
+  # gem install redis -v 3.0.7
+  gem install redis --version 3.0.7
   redis-server --version
 }
 
