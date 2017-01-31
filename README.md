@@ -13,7 +13,7 @@ bash <( curl https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup
 * You can choose to install selected tools by providing flags for the corresponding tools.
 For example: to install git and cf-cli only run
 ```
-bash <( curl https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/master/setup-mac-fe.sh) --git --cf
+bash <( curl https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/master/setup-mac-fe.sh ) --git --cf
 ```
 
 Tool | Flag | Notes
