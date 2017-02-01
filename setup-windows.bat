@@ -27,9 +27,11 @@ IF /I "%1"=="/curl" SET install[curl]=1
 IF /I "%1"=="/nodejs" SET install[nodejs]=1
 IF /I "%1"=="/python2" SET install[python2]=1
 IF /I "%1"=="/python3" SET install[python3]=1
+IF /I "%1"=="/jq" SET install[jq]=1
 SHIFT
 GOTO loop_process_args
 :end_loop_process_args
+install[jq]=1
 GOTO :eof
 
 :GET_DEPENDENCIES
@@ -98,6 +100,7 @@ SET install[curl]=0
 SET install[nodejs]=0
 SET install[python2]=0
 SET install[python3]=0
+SET install[jq]=0
 GOTO :eof
 
 :INSTALL_EVERYTHING
@@ -111,6 +114,7 @@ SET install[curl]=1
 SET install[nodejs]=1
 SET install[python2]=1
 SET install[python3]=1
+SET install[jq]=1
 GOTO :eof
 
 :START
@@ -130,6 +134,7 @@ SET curl=6
 SET nodejs=7
 SET python2=8
 SET python3=9
+SET jq=10
 
 CALL :PROCESS_ARGS %*
 
@@ -174,9 +179,16 @@ IF !install[nodejs]! EQU 1 (
   IF NOT !errorlevel! EQU 0 (
     npm install -g bower grunt-cli
   )
+  where gulp >$null 2>&1
+  IF NOT !errrolevel! EQU 0 (
+    npm install -g gulp-cli
+  )
 )
 
 IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
 IF !install[python3]! EQU 1 CALL :CHOCO_INSTALL python3 python3
+IF !install[jq]! EQU 1 CALL :CHOCO_INSTALL jq
 
 POPD
+
+EXIT /b 0

@@ -9,6 +9,7 @@ sts=4
 nodejs=5
 python3=6
 uaac=7
+jq=8
 
 declare -a install
 
@@ -91,6 +92,7 @@ function install_everything() {
   install[nodejs]=1
   install[python3]=1
   install[uaac]=0 # Install UAAC only if the --uaac flag is provided
+  install[jq]=1
 }
 
 function install_nothing() {
@@ -102,6 +104,7 @@ function install_nothing() {
   install[nodejs]=0
   install[python3]=0
   install[uaac]=0
+  install[jq]=0
 }
 
 function install_git() {
@@ -137,7 +140,7 @@ function install_maven() {
 function install_nodejs() {
   brew_install node
   node -v
-  brew_install npm
+  echo -ne "\nnpm "
   npm -v
 
   type bower > /dev/null || npm install -g bower
@@ -146,11 +149,20 @@ function install_nodejs() {
 
   type grunt > /dev/null || npm install -g grunt-cli
   grunt --version
+
+  type gulp > /dev/null || npm install -g gulp-cli
+  echo -ne "\ngulp "
+  gulp --version
 }
 
 function install_python3() {
   brew_install python3
   python3 --version
+}
+
+function install_jq() {
+  brew_install jq
+  jq --version
 }
 
 function install_uaac() {
@@ -198,8 +210,10 @@ function run_setup() {
       [ "$1" == "--nodejs" ] && install[nodejs]=1
       [ "$1" == "--python3" ] && install[python3]=1
       [ "$1" == "--uaac" ] && install[uaac]=1
+      [ "$1" == "--jq" ] && install[jq]=1
       shift
     done
+    install[jq]=1
   fi
 
   check_internet
@@ -236,6 +250,9 @@ function run_setup() {
 
   if [ ${install[uaac]} -eq 1 ]; then
     install_uaac
+  fi
+  if [ ${install[jq]} -eq 1 ]; then
+    install_jq
   fi
 }
 
