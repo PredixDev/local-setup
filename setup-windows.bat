@@ -31,7 +31,7 @@ IF /I "%1"=="/jq" SET install[jq]=1
 SHIFT
 GOTO loop_process_args
 :end_loop_process_args
-install[jq]=1
+SET install[jq]=1
 GOTO :eof
 
 :GET_DEPENDENCIES
