@@ -174,6 +174,7 @@ IF !install[curl]! EQU 1 CALL :CHOCO_INSTALL curl
 
 IF !install[nodejs]! EQU 1 CALL :CHOCO_INSTALL nodejs.install node
 CALL :RELOAD_ENV
+SET "PATH=%PATH%;%APPDATA%\npm"
 IF !install[nodejs]! EQU 1 (
   where bower >$null 2>&1 && where grunt >$null 2>&1
   IF NOT !errorlevel! EQU 0 (
