@@ -28,6 +28,7 @@ IF /I "%1"=="/nodejs" SET install[nodejs]=1
 IF /I "%1"=="/python2" SET install[python2]=1
 IF /I "%1"=="/python3" SET install[python3]=1
 IF /I "%1"=="/jq" SET install[jq]=1
+IF /I "%1"=="/force" SET force_choco=1
 SHIFT
 GOTO loop_process_args
 :end_loop_process_args
@@ -73,7 +74,11 @@ IF NOT "%2"=="" (
 )
 where !cmd! >$null 2>&1
 IF NOT !errorlevel! EQU 0 (
-  choco install -y --allow-empty-checksums %1
+  IF !force_choco! EQU 1 (
+    choco install -y --force --allow-empty-checksums %1
+  ) ELSE (
+    choco install -y --allow-empty-checksums %1
+  )
   CALL :CHECK_FAIL
   CALL :RELOAD_ENV
 ) ELSE (
