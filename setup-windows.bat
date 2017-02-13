@@ -28,7 +28,7 @@ IF /I "%1"=="/nodejs" SET install[nodejs]=1
 IF /I "%1"=="/python2" SET install[python2]=1
 IF /I "%1"=="/python3" SET install[python3]=1
 IF /I "%1"=="/jq" SET install[jq]=1
-IF /I "%1"=="/force" SET force_choco=1
+IF /I "%1"=="/predixcli" SET install[predixcli]=1
 SHIFT
 GOTO loop_process_args
 :end_loop_process_args
@@ -74,11 +74,7 @@ IF NOT "%2"=="" (
 )
 where !cmd! >$null 2>&1
 IF NOT !errorlevel! EQU 0 (
-  IF !force_choco! EQU 1 (
-    choco install -y --force --allow-empty-checksums %1
-  ) ELSE (
-    choco install -y --allow-empty-checksums %1
-  )
+  choco install -y --allow-empty-checksums %1
   CALL :CHECK_FAIL
   CALL :RELOAD_ENV
 ) ELSE (
@@ -86,6 +82,24 @@ IF NOT !errorlevel! EQU 0 (
   ECHO.
 )
 ENDLOCAL & GOTO :eof
+
+:INSTALL_PREDIXCLI
+ECHO Installing predixcli...
+where predix >$null 2>&1
+IF NOT !errorlevel! EQU 0 (
+  ECHO Downloading installer
+  CALL :GET_DEPENDENCIES
+  CALL :CHOCO_INSTALL 7zip.commandline 7z
+  @powershell -Command "(new-object net.webclient).DownloadFile('https://github.com/PredixDev/predix-cli/releases/download/v0.5.1/predix-cli.tar.gz','predix-cli.tar.gz')"
+  7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
+  REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
+  copy predix-cli\bin\win64\predix.exe %ALLUSERSPROFILE%\chocolatey\bin\
+  ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
+) ELSE (
+  ECHO Predix CLI already installed
+)
+predix -v
+GOTO :eof
 
 :CHECK_FAIL
 IF NOT !errorlevel! EQU 0 (
@@ -106,6 +120,7 @@ SET install[nodejs]=0
 SET install[python2]=0
 SET install[python3]=0
 SET install[jq]=0
+SET install[predixcli]=0
 GOTO :eof
 
 :INSTALL_EVERYTHING
@@ -120,6 +135,7 @@ SET install[nodejs]=1
 SET install[python2]=1
 SET install[python3]=1
 SET install[jq]=1
+SET install[predixcli]=1
 GOTO :eof
 
 :START
@@ -140,12 +156,15 @@ SET nodejs=7
 SET python2=8
 SET python3=9
 SET jq=10
+SET predixcli=11
 
 CALL :PROCESS_ARGS %*
 
 CALL :CHECK_INTERNET_CONNECTION
 CALL :GET_DEPENDENCIES
 CALL :INSTALL_CHOCO
+
+IF !install[jq]! EQU 1 CALL :CHOCO_INSTALL jq
 
 IF !install[git]! EQU 1 CALL :CHOCO_INSTALL git
 
@@ -193,8 +212,13 @@ IF !install[nodejs]! EQU 1 (
 
 IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
 IF !install[python3]! EQU 1 CALL :CHOCO_INSTALL python3 python3
-IF !install[jq]! EQU 1 CALL :CHOCO_INSTALL jq
+
+IF !install[predixcli]! EQU 1 (
+  CALL :INSTALL_PREDIXCLI
+)
 
 POPD
+
+ECHO Installation of tools completed. Open a new non-administrator prompt and proceed.
 
 EXIT /b 0
