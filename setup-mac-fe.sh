@@ -155,11 +155,19 @@ function install_maven() {
 
 function install_nodejs() {
   echo "--------------------------------------------------------------"
-  echo "Installing NodeJs v5.11.1 ..."
-  brew_install node 5.11.1
-  node -v
+  echo "Installing NodeJs..."
+  # brew_install node
+  # Normally the command above would be fine, unfortunately the current environment requires node 5.11.1 and brew installs, by default, the latest stable version. 
+  # We still install with brew but we also install a node verison manager 'n' to activate version 5.11.1.
+  brew_install node
+  echo "Installing NPM..."
   brew_install npm
   npm -v
+  echo "Installing Node Manager..."
+  npm install -g n
+  echo "Setting Node to v5.11.1..."
+  n 5.11.1
+  node -v
 
   echo "--------------------------------------------------------------"
   echo "Setting NPM environment variables..."
@@ -174,18 +182,25 @@ function install_nodejs() {
   bower -v
 
   echo "--------------------------------------------------------------"
-  echo "Installing Grunt..."
+  echo "Installing Grunt Cli..."
   type grunt > /dev/null || npm install -g grunt-cli
   grunt --version
 }
 
 function install_redis() {
-  # check for proper ruby environment
-  check_rbenv
   # Install Redis
   echo "--------------------------------------------------------------"
-  echo "Installing Redis..."
-  gem install redis -v 3.0.7
+  echo "Installing Redis"
+  # brew_install redis
+  # Normally the command above would be fine, however because the current environment requires redis 3.0.7 and brew does not have a proper formulae for that version. 
+  # We revert to manually scripting the installation below.
+  cd ~
+  curl -O http://download.redis.io/releases/redis-3.0.7.tar.gz
+  tar -xvzf redis-3.0.7.tar.gz
+  rm redis-3.0.7.tar.gz
+  cd redis-3.0.7
+  make
+  sudo make install
   redis-server --version
 }
 
@@ -193,9 +208,9 @@ function install_wct() {
   # Install the Polymer web-components-tester
   echo "--------------------------------------------------------------"
   echo "Installing Polymer web component tester..."
+  grantnpm
   npm install -g https://github.com/Polymer/web-component-tester.git#v4.2.2
-  sudo chown -R $USER /usr/local
-  npm install web-component-tester-istanbul -g 
+  npm install web-component-tester-istanbul -g
 }
 
 function install_python3() {
@@ -239,7 +254,7 @@ function check_rbenv() {
 function run_setup() {
   echo "--------------------------------------------------------------"
   echo "This script will install tools required for Predix development"
-  echo "You may be asked to provide your password during the installation process"
+  echo "You may be asked your system password during the process"
   echo "--------------------------------------------------------------"
   echo ""
   if [ -z "$1" ]; then
