@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
 
-SET RESETVARS=https://raw.githubusercontent.com/PredixDev/local-setup/master/resetvars.vbs
+SET RESETVARS=https://raw.githubusercontent.com/richcobrien/local-setup/master/resetvars.vbs
 
 GOTO START
 
@@ -148,7 +148,7 @@ IF !install[cf]! EQU 1 (
   ) ELSE (
   SET filename=predix_win32.exe
   )
-  ( cf plugins | findstr "Predix" >$null 2>&1 ) || cf install-plugin -f https://github.com/PredixDev/cf-predix/releases/download/1.0.0/!filename!
+  ( cf plugins | findstr "Predix" >$null 2>&1 ) || cf install-plugin -f https://github.com/richcobrien/cf-predix/releases/download/1.0.0/!filename!
   ENDLOCAL
 
   IF NOT !errorlevel! EQU 0 (
