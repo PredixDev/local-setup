@@ -1,0 +1,89 @@
+#!/bin/bash
+
+set -e
+
+checkRoot() {
+  if (( `whoami` != "root" )); then
+    echo "This script needs root privileges to run."
+    echo "Use 'sudo $0'"
+    exit 1
+  fi
+}
+
+requireCfCli() {
+  echo "Predix CLI requires Cloud Foundry CLI version 6.17 or later."
+  echo "Install the latest Cloud Foundry CLI from https://github.com/cloudfoundry/cli/releases"
+  exit 1
+}
+
+checkRoot
+readonly DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+if ! cf_path=$(type -p cf); then
+  requireCfCli
+else
+	version=$(cf --version)
+	majorversion=`echo "$version" | sed 's/^[^0-9]*\([0-9][0-9]*\)\..*$/\1/'`
+	minorversion=`echo "$version" | sed 's/^[^0-9]*[0-9][0-9]*\.\([0-9][0-9]*\).*$/\1/'`
+  if ! [[ $majorversion =~ ^[0-9]+$ ]] ||  ! [[ $minorversion =~ ^[0-9]+$ ]]; then
+    requireCfCli
+  fi
+  if [[ $majorversion < 6 ]] || [[ $majorversion == 6 && $minorversion < 17 ]]; then
+    requireCfCli
+  fi
+fi
+
+echo "Installing Predix CLI ..."
+
+if [ ! -d "/usr/local/Predix" ]; then
+  mkdir /usr/local/Predix
+fi
+if [ ! -d "/usr/local/Predix/bin" ]; then
+  mkdir /usr/local/Predix/bin
+fi
+if [ ! -d "/usr/local/Predix/autocomplete" ]; then
+  mkdir /usr/local/Predix/autocomplete
+fi
+
+if [ "$(uname)" == "Darwin" ]; then
+  PLATFORM=osx
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  PLATFORM=linux64
+fi
+cp -f "$DIR/bin/$PLATFORM/predix" /usr/local/Predix/bin/
+cp -f "$DIR/autocomplete/bash_autocomplete" /usr/local/Predix/autocomplete/
+cp -f "$DIR/autocomplete/zsh_autocomplete" /usr/local/Predix/autocomplete/
+
+ln -sf /usr/local/Predix/bin/predix /usr/local/bin/predix
+ln -sf /usr/local/Predix/bin/predix /usr/local/bin/px
+
+chown -R root:0 /usr/local/Predix
+chmod -R 755 /usr/local/Predix
+
+function addAutocompleteTo()
+{
+  config_file_path=$1
+  autocomplete_script_path=/usr/local/Predix/autocomplete/$2
+
+  if [ -f $config_file_path ] && [ -z "`cat $config_file_path | grep $autocomplete_script_path`" ]; then
+    chmod 644 $config_file_path
+    echo -e "\n#### Predix CLI Autocomplete ####" >> $config_file_path
+    echo "source $autocomplete_script_path" >> $config_file_path
+  fi
+}
+
+if [ ! -d "/etc/bash_completion.d" ]; then
+  addAutocompleteTo "/etc/profile" "bash_autocomplete"
+  addAutocompleteTo "/etc/bash.bashrc" "bash_autocomplete"
+else
+  cp -f "$DIR/autocomplete/bash_autocomplete" /etc/bash_completion.d/predix_cli_autocomplete
+  chown root:0 /etc/bash_completion.d/predix_cli_autocomplete
+  chmod 644 /etc/bash_completion.d/predix_cli_autocomplete
+fi
+
+addAutocompleteTo "/etc/zshrc" "zsh_autocomplete"
+addAutocompleteTo "/etc/zsh/zshrc" "zsh_autocomplete"
+
+echo "The Predix CLI has been installed successfully."
+echo "Run 'predix help' or 'px help'."
+echo "Open a new terminal for bash completion to work."

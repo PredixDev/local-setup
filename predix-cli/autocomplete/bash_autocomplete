@@ -1,0 +1,36 @@
+#! /bin/bash
+
+_predix_cli_bash_autocomplete() {
+  local cur opts pid
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  exec 3< <( ${COMP_WORDS[@]:0:$COMP_CWORD} --generate-bash-completion )
+  pid=$!
+  ps -p$pid &>/dev/null
+  count=0
+  while [ $? -eq 0 ]; do
+    if [ $count -eq 3 ]; then
+      echo -ne '\b\b\b   \b\b\b'
+      count=0
+    fi
+    ((count++))
+    echo -n '.'; sleep 0.1
+    ps -p$pid &>/dev/null
+  done
+  for i in `seq 1 $count`; do
+    echo -ne '\b'
+  done
+  for i in `seq 1 $count`; do
+    echo -ne ' '
+  done
+  for i in `seq 1 $count`; do
+    echo -ne '\b'
+  done
+  opts=$( cat <&3 )
+  local IFS=$'\n'
+  COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+  return 0
+}
+
+complete -F _predix_cli_bash_autocomplete predix
+complete -F _predix_cli_bash_autocomplete px
