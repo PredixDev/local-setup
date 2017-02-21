@@ -1,3 +1,5 @@
+
+
 #!/bin/bash
 set -e
 
@@ -9,8 +11,8 @@ sts=4
 nodejs=5
 python3=6
 uaac=7
-jq=8
-predixcli=9
+redis=8
+wct=9
 
 declare -a install
 
@@ -85,16 +87,17 @@ function brew_cask_install() {
 }
 
 function install_everything() {
+  # For front end environment Maven, Spring STS and Python are not required
   install[git]=1
   install[cf]=1
   install[jdk]=1
-  install[maven]=1
-  install[sts]=1
+  install[maven]=0
+  install[sts]=0
   install[nodejs]=1
-  install[python3]=1
+  install[python3]=0
   install[uaac]=0 # Install UAAC only if the --uaac flag is provided
-  install[jq]=1
-  install[predixcli]=1
+  install[redis]=1
+  install[wct]=1
 }
 
 function install_nothing() {
@@ -106,8 +109,8 @@ function install_nothing() {
   install[nodejs]=0
   install[python3]=0
   install[uaac]=0
-  install[jq]=0
-  install[predixcli]=0
+  install[redis]=0
+  install[wct]=0
 }
 
 function install_git() {
@@ -141,10 +144,14 @@ function install_maven() {
 }
 
 function install_nodejs() {
-  brew_install node
+  brew_install node 5.11.1
   node -v
-  echo -ne "\nnpm "
+  brew_install npm
   npm -v
+
+  npm set prefix “/usr/local”
+  npm set registry “http://registry.npmjs.org”
+  npm set strict-ssl false” 
 
   type bower > /dev/null || npm install -g bower
   echo -ne "\nbower "
@@ -152,20 +159,24 @@ function install_nodejs() {
 
   type grunt > /dev/null || npm install -g grunt-cli
   grunt --version
+}
 
-  type gulp > /dev/null || npm install -g gulp-cli
-  echo -ne "\ngulp "
-  gulp --version
+function install_redis() {
+  # Install Redis
+  brew_install redis
+  redis --version
+}
+
+function install_wct() {
+  # Install the Polymer web-components-tester
+  npm install -g https://github.com/Polymer/web-component-tester.git#v4.2.2
+  sudo chown -R $USER /usr/local
+  npm install web-component-tester-istanbul -g 
 }
 
 function install_python3() {
   brew_install python3
   python3 --version
-}
-
-function install_jq() {
-  brew_install jq
-  jq --version
 }
 
 function install_uaac() {
@@ -192,20 +203,6 @@ function install_uaac() {
   gem install cf-uaac
 }
 
-function install_predixcli() {
-  if which predix > /dev/null; then
-    echo "Predix CLI already installed."
-    predix -v
-  else
-    cli_url=$(curl -s -L https://api.github.com/repos/PredixDev/predix-cli/releases | jq -r ".[0].assets[0].browser_download_url")
-    echo "Downloading latest Predix CLI: $cli_url"
-    curl -L -O "$cli_url"
-    mkdir -p predix-cli && tar -xf predix-cli.tar.gz -C predix-cli
-    echo "Please enter your system password, so the Predix CLI can be installed using sudo."
-    sudo ./predix-cli/install
-  fi
-}
-
 function run_setup() {
   echo "--------------------------------------------------------------"
   echo "This script will install tools required for Predix development"
@@ -227,20 +224,15 @@ function run_setup() {
       [ "$1" == "--nodejs" ] && install[nodejs]=1
       [ "$1" == "--python3" ] && install[python3]=1
       [ "$1" == "--uaac" ] && install[uaac]=1
-      [ "$1" == "--jq" ] && install[jq]=1
-      [ "$1" == "--predixcli" ] && install[predixcli]=1
+      [ "$1" == "--redis" ] && install[redis]=1
+      [ "$1" == "--wct" ] && install[wct]=1
       shift
     done
-    install[jq]=1
   fi
 
   check_internet
   check_bash_profile
   install_brew_cask
-
-  if [ ${install[jq]} -eq 1 ]; then
-    install_jq
-  fi
 
   if [ ${install[git]} -eq 1 ]; then
     install_git
@@ -266,16 +258,20 @@ function run_setup() {
     install_nodejs
   fi
 
+  if [ ${install[redis]} -eq 1 ]; then
+    install_redis
+  fi
+
+  if [ ${install[wct]} -eq 1 ]; then
+    install_wct
+  fi
+
   if [ ${install[python3]} -eq 1 ]; then
     install_python3
   fi
 
   if [ ${install[uaac]} -eq 1 ]; then
     install_uaac
-  fi
-
-  if [ ${install[predixcli]} -eq 1 ]; then
-    install_predixcli
   fi
 }
 
