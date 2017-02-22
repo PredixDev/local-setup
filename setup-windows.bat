@@ -190,7 +190,14 @@ IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
 IF !install[python3]! EQU 1 CALL :CHOCO_INSTALL python3 python3
 
 IF !install[uaac]! EQU 1 (
-  CALL :CHOCO_INSTALL ruby
+  SETLOCAL
+  IF EXIST "%ProgramFiles(x86)%" (
+    CALL :CHOCO_INSTALL ruby-64
+  ) ELSE (
+    CALL :CHOCO_INSTALL ruby
+  )
+  ENDLOCAL
+  CALL :RELOAD_ENV
   gem install cf-uaac
 )
 IF !install[redis]! EQU 1 (
