@@ -189,7 +189,10 @@ IF !install[nodejs]! EQU 1 (
 IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
 IF !install[python3]! EQU 1 CALL :CHOCO_INSTALL python3 python3
 
-IF !install[uaac]! EQU 1 CALL :CHOCO_INSTALL cf-uaac
+IF !install[uaac]! EQU 1 (
+  CALL :CHOCO_INSTALL ruby
+  gem install cf-uaac
+)
 IF !install[redis]! EQU 1 (
   SETLOCAL
   IF EXIST "%ProgramFiles(x86)%" (
