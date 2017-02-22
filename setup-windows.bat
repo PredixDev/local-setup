@@ -27,6 +27,9 @@ IF /I "%1"=="/curl" SET install[curl]=1
 IF /I "%1"=="/nodejs" SET install[nodejs]=1
 IF /I "%1"=="/python2" SET install[python2]=1
 IF /I "%1"=="/python3" SET install[python3]=1
+IF /I "%1"=="/uaac" SET install[uaac]=1
+IF /I "%1"=="/redis" SET install[redis]=1
+IF /I "%1"=="/wct" SET install[wct]=1
 SHIFT
 GOTO loop_process_args
 :end_loop_process_args
@@ -98,6 +101,9 @@ SET install[curl]=0
 SET install[nodejs]=0
 SET install[python2]=0
 SET install[python3]=0
+SET install[uaac]=0
+SET install[redis]=0
+SET install[wct]=0
 GOTO :eof
 
 :INSTALL_EVERYTHING
@@ -111,6 +117,9 @@ SET install[curl]=1
 SET install[nodejs]=1
 SET install[python2]=1
 SET install[python3]=1
+SET install[uaac]=1
+SET install[redis]=1
+SET install[wct]=1
 GOTO :eof
 
 :START
@@ -130,6 +139,9 @@ SET curl=6
 SET nodejs=7
 SET python2=8
 SET python3=9
+SET uaac=10
+SET redis=11
+SET wct=12
 
 CALL :PROCESS_ARGS %*
 
@@ -164,9 +176,8 @@ IF !install[putty]! EQU 1 CALL :CHOCO_INSTALL putty
 IF !install[jdk]! EQU 1 CALL :CHOCO_INSTALL jdk8 javac
 IF !install[maven]! EQU 1 CALL :CHOCO_INSTALL maven mvn
 REM TODO - Uncomment once the chocolatey package is fixed
-REM IF !install[sts]! EQU 1 CALL :CHOCO_INSTALL springtoolsuite
+IF !install[sts]! EQU 1 CALL :CHOCO_INSTALL springtoolsuite
 IF !install[curl]! EQU 1 CALL :CHOCO_INSTALL curl
-
 IF !install[nodejs]! EQU 1 CALL :CHOCO_INSTALL nodejs.install node
 CALL :RELOAD_ENV
 IF !install[nodejs]! EQU 1 (
@@ -175,8 +186,22 @@ IF !install[nodejs]! EQU 1 (
     npm install -g bower grunt-cli
   )
 )
-
 IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
 IF !install[python3]! EQU 1 CALL :CHOCO_INSTALL python3 python3
+
+IF !install[uaac]! EQU 1 CALL :CHOCO_INSTALL cf-uaac
+IF !install[redis]! EQU 1 (
+  SETLOCAL
+  IF EXIST "%ProgramFiles(x86)%" (
+    CALL :CHOCO_INSTALL redis-64
+  ) ELSE (
+    CALL :CHOCO_INSTALL redis
+  )
+  ENDLOCAL
+)
+IF !install[wct]! EQU 1 (
+  npm install -g https://github.com/Polymer/web-component-tester.git#v4.2.2
+  npm install web-component-tester-istanbul -g
+)
 
 POPD
