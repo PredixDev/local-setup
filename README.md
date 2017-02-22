@@ -62,7 +62,7 @@ Tool | Flag | Notes
 * You can choose to install selected tools by providing flags for the corresponding tools.
 For example: to install git and cf-cli only run
 ```
-@powershell -Command "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/richcobrien/local-setup/master/setup-windows.bat','%TEMP%\setup-windows.bat')" && "%TEMP%\setup-windows.bat /git /cf"
+@powershell -Command "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/richcobrien/local-setup/master/setup-windows.bat','%TEMP%\setup-windows.bat')" && "%TEMP%\setup-windows.bat" /git /cf
 ```
 
 Tool | Flag | Notes
