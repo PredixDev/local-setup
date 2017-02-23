@@ -198,6 +198,8 @@ IF !install[uaac]! EQU 1 (
   )
   ENDLOCAL
   CALL :RELOAD_ENV
+  CALL :CHOCO_INSTALL ruby2.devkit
+  CALL :RELOAD_ENV
   gem install cf-uaac
 )
 IF !install[redis]! EQU 1 (
