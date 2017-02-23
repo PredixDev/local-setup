@@ -196,11 +196,12 @@ IF !install[uaac]! EQU 1 (
   CALL :RELOAD_ENV
   cd\tools\DevKit2\
   ruby dk.rb init
-  Echo Please update the config.yml devkit file with install location of Ruby: - C:\tools\ruby23\, press enter when completed
+  Echo Please update the config.yml devkit file with install location of Ruby: - C:\tools\ruby23\, press enter when ready
   Pause
   ruby dk.rb install
   gem install cf-uaac
   cd %userprofile%
+  uaac version
 )
 IF !install[redis]! EQU 1 (
   SETLOCAL
