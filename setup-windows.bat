@@ -190,16 +190,17 @@ IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
 IF !install[python3]! EQU 1 CALL :CHOCO_INSTALL python3 python3
 
 IF !install[uaac]! EQU 1 (
-  SETLOCAL
-  IF EXIST "%ProgramFiles(x86)%" (
-    CALL :CHOCO_INSTALL ruby-64
-  ) ELSE (
-    CALL :CHOCO_INSTALL ruby
-  )
+  CALL :CHOCO_INSTALL ruby
   CALL :CHOCO_INSTALL ruby2.devkit
-  ENDLOCAL
+  setx path "%path%;C:\tools\DevKit2\bin"
   CALL :RELOAD_ENV
+  cd\tools\DevKit2\
+  ruby dk.rb init
+  Echo Please update the config.yml devkit file with install location of Ruby: - C:\tools\ruby23\, press enter when completed
+  Pause
+  ruby dk.rb install
   gem install cf-uaac
+  cd %userprofile%
 )
 IF !install[redis]! EQU 1 (
   SETLOCAL
