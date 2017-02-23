@@ -70,12 +70,15 @@ Tool | Flag | Notes
 [chocolatey] (https://chocolatey.org) | | Required to manage the installation of tools
 [Git] (https://git-scm.com) | /git |
 [cf-cli] (http://docs.cloudfoundry.org/cf-cli) | /cf |
+[cf-uaac] (https://github.com/cloudfoundry/cf-uaac) | /uaac | (Frontend) User Access Control for Predix 
+[Node.js] (https://nodejs.org), [Bower] (http://bower.io/), [Grunt CLI] (http://gruntjs.com) | /nodejs | (Frontend) UI Tools
+[Redis] (https://redis.io/) | /redis | Datastore
+[Polymer Web Component Tester] (https://github.com/Polymer/web-component-tester) | /wct | (Frontend) UI testing tool
 [putty] (http://www.putty.org) | /putty |
 [Java SE Development Kit (JDK)] (http://www.oracle.com/technetwork/java/javase/downloads/index.html) | /jdk |
 [Maven] (https://maven.apache.org) | /maven |
 [Eclipse STS] (https://spring.io/tools/sts) | /sts |
 [cURL] (https://curl.haxx.se) | /curl |
-[Node.js] (https://nodejs.org), [Bower] (http://bower.io/), [Grunt CLI] (http://gruntjs.com) | /nodejs |
 [Python2] (https://www.python.org) | /python2 |
 [Python3] (https://www.python.org) | /python3 |
 
