@@ -68,19 +68,19 @@ For example: to install git and cf-cli only run
 Tool | Flag | Notes
 --- | --- | ---
 [chocolatey] (https://chocolatey.org) | | Required to manage the installation of tools
-[Git] (https://git-scm.com) | /git |
-[cf-cli] (http://docs.cloudfoundry.org/cf-cli) | /cf |
+[Git] (https://git-scm.com) | /git | Git Repository
+[cf-cli] (http://docs.cloudfoundry.org/cf-cli) | /cf | Used for Predix
 [cf-uaac] (https://github.com/cloudfoundry/cf-uaac) | /uaac | (Frontend) User Access Control for Predix 
 [Node.js] (https://nodejs.org), [Bower] (http://bower.io/), [Grunt CLI] (http://gruntjs.com) | /nodejs | (Frontend) UI Tools
 [Redis] (https://redis.io/) | /redis | Datastore
 [Polymer Web Component Tester] (https://github.com/Polymer/web-component-tester) | /wct | (Frontend) UI testing tool
-[putty] (http://www.putty.org) | /putty |
-[Java SE Development Kit (JDK)] (http://www.oracle.com/technetwork/java/javase/downloads/index.html) | /jdk |
-[Maven] (https://maven.apache.org) | /maven |
-[Eclipse STS] (https://spring.io/tools/sts) | /sts |
-[cURL] (https://curl.haxx.se) | /curl |
-[Python2] (https://www.python.org) | /python2 |
-[Python3] (https://www.python.org) | /python3 |
+[putty] (http://www.putty.org) | /putty | SSH Utility
+[Java SE Development Kit (JDK)] (http://www.oracle.com/technetwork/java/javase/downloads/index.html) | /jdk | Language
+[Maven] (https://maven.apache.org) | /maven | Software Build Management
+[Eclipse STS] (https://spring.io/tools/sts) | /sts | Spring IDE
+[cURL] (https://curl.haxx.se) | /curl | Cli URL transfer library
+[Python2] (https://www.python.org) | /python2 | Language
+[Python3] (https://www.python.org) | /python3 | Language
 
 [![Analytics](https://ga-beacon.appspot.com/UA-82773213-1/local-setup/readme?pixel)](https://github.com/PredixDev)
 
