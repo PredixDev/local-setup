@@ -183,7 +183,8 @@ CALL :RELOAD_ENV
 IF !install[nodejs]! EQU 1 (
   where bower >$null 2>&1 && where grunt >$null 2>&1
   IF NOT !errorlevel! EQU 0 (
-    npm install -g bower grunt-cli
+    npm install -g bower grunt-cli nvm
+    npm -v
   )
 )
 IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
@@ -214,7 +215,7 @@ IF !install[redis]! EQU 1 (
 )
 IF !install[wct]! EQU 1 (
   npm install -g https://github.com/Polymer/web-component-tester.git#v4.2.2
-  npm install web-component-tester-istanbul -g
+  npm install -g web-component-tester-istanbul
 )
 
 POPD
