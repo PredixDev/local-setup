@@ -94,6 +94,7 @@ IF NOT !errorlevel! EQU 0 (
   7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
   REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
   copy predix-cli\bin\win64\predix.exe %ALLUSERSPROFILE%\chocolatey\bin\
+  mklink %ALLUSERSPROFILE%\chocolatey\bin\px.exe %ALLUSERSPROFILE%\chocolatey\bin\predix.exe
   ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
 ) ELSE (
   ECHO Predix CLI already installed
@@ -218,7 +219,7 @@ IF !install[predixcli]! EQU 1 (
 )
 
 POPD
-
-ECHO Installation of tools completed. Open a new non-administrator prompt and proceed.
+ECHO.
+ECHO Installation of tools completed. Close this administrator command window and open a new non-administrator prompt and proceed.  If you installed git, we recommend using a regular Windows command window to login to the Predix Cloud and a git-bash window found in the start menu for everything else.
 
 EXIT /b 0
