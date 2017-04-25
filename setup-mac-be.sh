@@ -181,9 +181,9 @@ function install_nodejs() {
   bower -v
 
   echo "--------------------------------------------------------------"
-  echo "Installing Grunt Cli..."
-  type grunt > /dev/null || npm install -g grunt-cli
-  grunt --version
+  echo "Installing Gulp..."
+  type gulp > /dev/null || npm install -g gulp@3.9.1
+  gulp --version
 }
 
 function install_redis() {

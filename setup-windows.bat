@@ -170,9 +170,9 @@ IF !install[curl]! EQU 1 CALL :CHOCO_INSTALL curl
 IF !install[nodejs]! EQU 1 CALL :CHOCO_INSTALL nodejs.install node
 CALL :RELOAD_ENV
 IF !install[nodejs]! EQU 1 (
-  where bower >$null 2>&1 && where grunt >$null 2>&1
+  where bower >$null 2>&1 && where gulp >$null 2>&1
   IF NOT !errorlevel! EQU 0 (
-    npm install -g bower grunt-cli
+    npm install -g bower gulp@3.9.1
   )
 )
 

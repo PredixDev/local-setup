@@ -6,7 +6,7 @@ Scripts to install the tools required for development on the Predix Platform.
 
 ### On Mac OS X (Frontend Tools Javascript development)
 
-* Run the command below in a terminal window to install all the standard tools for frontend development (Includes latest Ruby, Brew, Git, Cloud Foundry, Predix User Access Control, NodeJS - Bower & Grunt, Redis, Polymer Web Component Tester, Java JDK)
+* Run the command below in a terminal window to install all the standard tools for frontend development (Includes latest Ruby, Brew, Git, Cloud Foundry, Predix User Access Control, NodeJS - Bower & Gulp, Redis, Polymer Web Component Tester, Java JDK)
 ```
 bash <( curl https://raw.githubusercontent.com/predix-edgemanager-ui/local-setup/master/setup-mac-fe.sh )
 ```
@@ -22,7 +22,7 @@ Tool | Flag | Notes
 [Git] (https://git-scm.com) | --git | Git Repository
 [Cloud Foundry cli] (http://docs.cloudfoundry.org/cf-cli) | --cf | Used for Predix
 [cf-uaac] (https://github.com/cloudfoundry/cf-uaac) | --uaac | (Frontend) User Access Control for Predix 
-[Node.js] (https://nodejs.org), [Bower] (http://bower.io/), [Grunt CLI] (http://gruntjs.com) | --nodejs | (Frontend) UI Tools
+[Node.js] (https://nodejs.org), [Bower] (http://bower.io/), [Gulp] (http://gulpjs.com) | --nodejs | (Frontend) UI Tools
 [Redis] (https://redis.io/) | --redis | Datastore
 [Polymer Web Component Tester] (https://github.com/Polymer/web-component-tester) | --wct | (Frontend) UI testing tool
 [Java SE Development Kit (JDK)] (http://www.oracle.com/technetwork/java/javase/downloads/index.html) | --jdk | Language Used for Frontend Testing
@@ -75,7 +75,7 @@ Tool | Flag | Notes
 [Maven] (https://maven.apache.org) | /maven |
 [Eclipse STS] (https://spring.io/tools/sts) | /sts |
 [cURL] (https://curl.haxx.se) | /curl |
-[Node.js] (https://nodejs.org), [Bower] (http://bower.io/), [Grunt CLI] (http://gruntjs.com) | /nodejs |
+[Node.js] (https://nodejs.org), [Bower] (http://bower.io/), [Gulp] (http://gulpjs.com) | /nodejs |
 [Python2] (https://www.python.org) | /python2 |
 [Python3] (https://www.python.org) | /python3 |
 
