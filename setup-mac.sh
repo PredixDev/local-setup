@@ -27,7 +27,7 @@ function check_internet() {
   echo "Checking internet connection..."
   curl "http://google.com" > /dev/null 2>&1
   if [ $? -ne 0 ]; then
-    echo "Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy"
+    echo "Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy.  Please read this tutorial for detailed info about setting your proxy https://www.predix.io/resources/tutorials/tutorial-details.html?tutorial_id=1565"
     exit 1
   fi
   echo "OK"
@@ -156,6 +156,7 @@ function install_nodejs() {
   type gulp > /dev/null || npm install -g gulp-cli
   echo -ne "\ngulp "
   gulp --version
+  echo "node install complete"
 }
 
 function install_python3() {

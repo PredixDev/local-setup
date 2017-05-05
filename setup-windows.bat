@@ -50,7 +50,7 @@ GOTO :eof
 ECHO Checking internet connection...
 @powershell -Command "(new-object net.webclient).DownloadString('http://www.google.com')" >$null 2>&1
 IF NOT !errorlevel! EQU 0 (
-  ECHO Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy
+  ECHO Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy.  For detailed info about setting up your proxy please see this tutorial https://www.predix.io/resources/tutorials/tutorial-details.html?tutorial_id=1565
   exit /b !errorlevel!
 )
 ECHO OK
@@ -201,14 +201,19 @@ IF !install[nodejs]! EQU 1 CALL :CHOCO_INSTALL nodejs.install node
 CALL :RELOAD_ENV
 SET "PATH=%PATH%;%APPDATA%\npm"
 IF !install[nodejs]! EQU 1 (
-  where bower >$null 2>&1 && where grunt >$null 2>&1
+  where bower >$null 2>&1
   IF NOT !errorlevel! EQU 0 (
-    npm install -g bower grunt-cli
+    npm install -g bower
+  )
+  where grunt >$null 2>&1
+  IF NOT !errorlevel! EQU 0 (
+    npm install -g grunt-cli
   )
   where gulp >$null 2>&1
   IF NOT !errrolevel! EQU 0 (
     npm install -g gulp-cli
   )
+  exit /b 0
 )
 
 IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
@@ -220,6 +225,8 @@ IF !install[predixcli]! EQU 1 (
 
 POPD
 ECHO.
-ECHO Installation of tools completed. Close this administrator command window and open a new non-administrator prompt and proceed.  If you installed git, we recommend using a regular Windows command window to login to the Predix Cloud and a git-bash window found in the start menu for everything else.
+ECHO Installation of tools completed. If only installing tools, close this administrator command window and open a new non-administrator prompt and proceed.  
+ECHO If you installed git, we recommend using a regular Windows command window to login to the Predix Cloud and a git-bash window found in the start menu for everything else.
+ECHO If running a tutorial script, press any key to continue.  Be sure to work out of a git-bash window for your everyday work.
 
 EXIT /b 0
