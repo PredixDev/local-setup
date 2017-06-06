@@ -97,7 +97,11 @@ IF NOT !errorlevel! EQU 0 (
   mklink %ALLUSERSPROFILE%\chocolatey\bin\px.exe %ALLUSERSPROFILE%\chocolatey\bin\predix.exe
   ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
 ) ELSE (
-  ECHO Predix CLI already installed
+  ECHO Predix CLI already installed, predix is installed at...
+  where predix
+  ECHO Predix CLI already installed, px shortcut is installed at...
+  where px
+  ECHO Predix CLI version is as follows, please check for updates at https://github.com/PredixDev/predix-cli
 )
 predix -v
 GOTO :eof
@@ -213,7 +217,6 @@ IF !install[nodejs]! EQU 1 (
   IF NOT !errrolevel! EQU 0 (
     npm install -g gulp-cli
   )
-  exit /b 0
 )
 
 IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
@@ -225,7 +228,7 @@ IF !install[predixcli]! EQU 1 (
 
 POPD
 ECHO.
-ECHO Installation of tools completed. If only installing tools, close this administrator command window and open a new non-administrator prompt and proceed.  
+ECHO Installation of tools completed. If only installing tools, close this administrator command window and open a new non-administrator prompt and proceed.
 ECHO If you installed git, we recommend using a regular Windows command window to login to the Predix Cloud and a git-bash window found in the start menu for everything else.
 ECHO If running a tutorial script, press any key to continue.  Be sure to work out of a git-bash window for your everyday work.
 
