@@ -157,16 +157,16 @@ function install_nodejs() {
   echo "--------------------------------------------------------------"
   echo "Installing NodeJs..."
   # brew_install node
-  # Normally the command above would be fine, unfortunately the current environment requires node 5.11.1 and brew installs, by default, the latest stable version. 
-  # We still install with brew but we also install a node verison manager 'n' to activate version 5.11.1.
+  # Normally the command above would be fine, unfortunately the current environment requires node 6.10.1 and brew installs, by default, the latest stable version. 
+  # We still install with brew but we also install a node verison manager 'n' to activate version 6.10.1.
   brew_install node
   echo "Installing NPM..."
   brew_install npm
   npm -v
   echo "Installing Node Manager..."
   npm install -g n
-  echo "Setting Node to v5.11.1..."
-  n 5.11.1
+  echo "Setting Node to v6.10.1..."
+  n 6.10.1
   node -v
 
   echo "--------------------------------------------------------------"
