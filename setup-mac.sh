@@ -11,6 +11,7 @@ python3=6
 uaac=7
 jq=8
 predixcli=9
+mobilecli=10
 
 declare -a install
 
@@ -48,9 +49,9 @@ function check_bash_profile() {
 function install_brew_cask() {
   # Install brew and cask
   if which brew > /dev/null; then
-    echo "brew already installed, tapping cask"
+    echo "brew already installed, tapping cask, this may take a full minute"
   else
-    echo "Installing brew and cask"
+    echo "Installing brew and cask, this may take a few minutes"
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   fi
   brew tap caskroom/cask
@@ -95,6 +96,7 @@ function install_everything() {
   install[uaac]=0 # Install UAAC only if the --uaac flag is provided
   install[jq]=1
   install[predixcli]=1
+  install[mobilecli]=1
 }
 
 function install_nothing() {
@@ -108,6 +110,7 @@ function install_nothing() {
   install[uaac]=0
   install[jq]=0
   install[predixcli]=0
+  install[mobilecli]=0
 }
 
 function install_git() {
@@ -197,6 +200,8 @@ function install_predixcli() {
   if which predix > /dev/null; then
     echo "Predix CLI already installed."
     predix -v
+    PREDIX_VERSION=$(predix -v | awk -F" " '{print $3}')
+    update_predixcli $PREDIX_VERSION
   else
     cli_url=$(curl -s -L https://api.github.com/repos/PredixDev/predix-cli/releases | jq -r ".[0].assets[0].browser_download_url")
     echo "Downloading latest Predix CLI: $cli_url"
@@ -204,6 +209,47 @@ function install_predixcli() {
     mkdir -p predix-cli && tar -xf predix-cli.tar.gz -C predix-cli
     echo "Please enter your system password, so the Predix CLI can be installed using sudo."
     sudo ./predix-cli/install
+  fi
+}
+
+
+function update_predixcli() {
+  #echo "Predix CLI updgrade"$1
+  existing_version=$1
+  cli_version_name=$(curl -s -L https://api.github.com/repos/PredixDev/predix-cli/releases | jq -r ".[0].tag_name")
+  cli_version_name=${cli_version_name:1}
+  echo "Predix CLI already installed version."$existing_version
+  echo "Predix CLI new installed version."$cli_version_name
+  echo "checking for upgrade"
+  if [[ "$existing_version" != *"$cli_version_name"* ]]; then
+    echo "Upgrading Predix CLI to version" $cli_version_name
+    cli_url=$(curl -s -L https://api.github.com/repos/PredixDev/predix-cli/releases | jq -r ".[0].assets[0].browser_download_url")
+    echo "Downloading latest Predix CLI: $cli_url"
+    curl -L -O "$cli_url"
+    mkdir -p predix-cli && tar -xf predix-cli.tar.gz -C predix-cli
+    echo "Please enter your system password, so the Predix CLI can be installed using sudo."
+    sudo ./predix-cli/install
+  fi
+
+}
+
+function install_mobilecli() {
+  if which pm > /dev/null; then
+    echo "Predix Mobile CLI already installed."
+    pm
+  else
+    #cli_url=$(curl -g -s -L https://api.github.com/repos/PredixDev/predix-mobile-cli/releases | jq -r '.' )
+    cli_url=$(curl -g -s -L https://api.github.com/repos/PredixDev/predix-mobile-cli/releases | jq -r '[ .[] | select(.prerelease==false) ] | .[0].assets[]  |  select(.name | contains("Mac")) | .browser_download_url' )
+    cli_install_url="https://raw.githubusercontent.com/PredixDev/local-setup/mobile-cli-install.sh"
+    #cli_install_url="https://github.build.ge.com/raw/adoption/local-setup/develop/mobile-cli-install.sh"
+    echo "Downloading latest Predix Mobile CLI: $cli_url"
+    curl -L "$cli_url" -o pm.zip
+    mkdir -p mobile-cli && tar -xf pm.zip -C mobile-cli
+    cd mobile-cli
+    curl -L -O "$cli_install_url"
+    chmod +x mobile-cli-install
+    echo "Please enter your system password, so the Predix Mobile CLI can be installed using sudo."
+    sudo ./mobile-cli-install
   fi
 }
 
@@ -230,6 +276,7 @@ function run_setup() {
       [ "$1" == "--uaac" ] && install[uaac]=1
       [ "$1" == "--jq" ] && install[jq]=1
       [ "$1" == "--predixcli" ] && install[predixcli]=1
+      [ "$1" == "--mobilecli" ] && install[mobilecli]=1
       shift
     done
     install[jq]=1
@@ -277,6 +324,10 @@ function run_setup() {
 
   if [ ${install[predixcli]} -eq 1 ]; then
     install_predixcli
+  fi
+
+  if [ ${install[mobilecli]} -eq 1 ]; then
+    install_mobilecli
   fi
 }
 

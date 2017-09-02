@@ -29,6 +29,7 @@ IF /I "%1"=="/python2" SET install[python2]=1
 IF /I "%1"=="/python3" SET install[python3]=1
 IF /I "%1"=="/jq" SET install[jq]=1
 IF /I "%1"=="/predixcli" SET install[predixcli]=1
+IF /I "%1"=="/mobilecli" SET install[mobilecli]=1
 SHIFT
 GOTO loop_process_args
 :end_loop_process_args
@@ -44,6 +45,7 @@ GOTO :eof
 :RELOAD_ENV
   "%TEMP%\resetvars.vbs"
   CALL "%TEMP%\resetvars.bat" >$null
+  CALL refreshenv
 GOTO :eof
 
 :CHECK_INTERNET_CONNECTION
@@ -90,13 +92,29 @@ IF NOT !errorlevel! EQU 0 (
   ECHO Downloading installer
   CALL :GET_DEPENDENCIES
   CALL :CHOCO_INSTALL 7zip.commandline 7z
-  @powershell -Command "(new-object net.webclient).DownloadFile('https://github.com/PredixDev/predix-cli/releases/download/v0.5.1/predix-cli.tar.gz','predix-cli.tar.gz')"
+  REM get the url of the release file
+  (curl -s -L https://api.github.com/repos/PredixDev/predix-cli/releases >output.tmp )
+  SET /p cli_url=<output2.tmp
+  @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','predix-cli.tar.gz')"
   7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
   REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
   copy predix-cli\bin\win64\predix.exe %ALLUSERSPROFILE%\chocolatey\bin\
   mklink %ALLUSERSPROFILE%\chocolatey\bin\px.exe %ALLUSERSPROFILE%\chocolatey\bin\predix.exe
   ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
 ) ELSE (
+  predix -v >pxcliv.tmp
+  SET /p predixcli_current_version=<pxcliv.tmp
+  (curl -s -L -k https://api.github.com/repos/PredixDev/predix-cli/releases >releaseresponse.tmp )
+  <releaseresponse.tmp (jq -r ".[0].tag_name" >releaseresponsename.tmp)
+  <releaseresponsename.tmp (SET /p cli_latest_tag=)
+  SET cli_latest_tag=!cli_latest_tag:~1!
+  echo.!predixcli_current_version!|findstr /C:!cli_latest_tag! >nul 2>&1
+  if not errorlevel 1 (
+    ECHO PREDIX CLI is current
+  ) else (
+    ECHO Upgrading Predix CLI to version  !cli_latest_tag!
+    CALL :UPGRADE_PREDIXCLI
+  )
   ECHO Predix CLI already installed, predix is installed at...
   where predix
   ECHO Predix CLI already installed, px shortcut is installed at...
@@ -104,6 +122,48 @@ IF NOT !errorlevel! EQU 0 (
   ECHO Predix CLI version is as follows, please check for updates at https://github.com/PredixDev/predix-cli
 )
 predix -v
+GOTO :eof
+
+:UPGRADE_PREDIXCLI
+  ECHO Installing predixcli...
+  ECHO Downloading installer
+  CALL :GET_DEPENDENCIES
+  CALL :CHOCO_INSTALL 7zip.commandline 7z
+  REM get the url of the release file
+  (curl -s -L https://api.github.com/repos/PredixDev/predix-cli/releases >output.tmp )
+  SET /p cli_url=<output2.tmp
+  @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','predix-cli.tar.gz')"
+  7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
+  REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
+  copy predix-cli\bin\win64\predix.exe %ALLUSERSPROFILE%\chocolatey\bin\
+  mklink %ALLUSERSPROFILE%\chocolatey\bin\px.exe %ALLUSERSPROFILE%\chocolatey\bin\predix.exe
+  ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
+GOTO :eof
+
+
+
+:INSTALL_MOBILECLI
+ECHO Installing mobilecli...
+where pm >$null 2>&1
+IF NOT !errorlevel! EQU 0 (
+  ECHO Downloading installer
+  CALL :GET_DEPENDENCIES
+  CALL :CHOCO_INSTALL 7zip.commandline 7z
+  REM get the url of the release file
+  (curl -s -L https://api.github.com/repos/PredixDev/predix-mobile-cli/releases >output.tmp )
+  <output.tmp ( jq -r "[ .[] | select(.prerelease==false) ] | .[0].assets[]  |  select(.name | contains(\"win\")) | .browser_download_url" >output2.tmp )
+  <output2.tmp (SET /p cli_url=)
+  @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','pm.zip')"
+  7z x "pm.zip" -o"mobile-cli"
+  REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
+  copy mobile-cli\pm.exe %ALLUSERSPROFILE%\chocolatey\bin\
+  ECHO Mobile CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
+) ELSE (
+  ECHO Mobile CLI already installed, pm is installed at...
+  where pm
+  ECHO Mobile CLI version is as follows, please check for updates at https://github.com/PredixDev/predix-mobile-cli
+)
+rem pm -v
 GOTO :eof
 
 :CHECK_FAIL
@@ -126,6 +186,7 @@ SET install[python2]=0
 SET install[python3]=0
 SET install[jq]=0
 SET install[predixcli]=0
+SET install[mobilecli]=0
 GOTO :eof
 
 :INSTALL_EVERYTHING
@@ -141,6 +202,7 @@ SET install[python2]=1
 SET install[python3]=1
 SET install[jq]=1
 SET install[predixcli]=1
+SET install[mobilecli]=1
 GOTO :eof
 
 :START
@@ -162,6 +224,7 @@ SET python2=8
 SET python3=9
 SET jq=10
 SET predixcli=11
+SET mobilecli=12
 
 CALL :PROCESS_ARGS %*
 
@@ -214,7 +277,7 @@ IF !install[nodejs]! EQU 1 (
     npm install -g grunt-cli
   )
   where gulp >$null 2>&1
-  IF NOT !errrolevel! EQU 0 (
+  IF NOT !errorlevel! EQU 0 (
     npm install -g gulp-cli
   )
 )
@@ -224,6 +287,9 @@ IF !install[python3]! EQU 1 CALL :CHOCO_INSTALL python3 python3
 
 IF !install[predixcli]! EQU 1 (
   CALL :INSTALL_PREDIXCLI
+)
+IF !install[mobilecli]! EQU 1 (
+  CALL :INSTALL_MOBILECLI
 )
 
 POPD

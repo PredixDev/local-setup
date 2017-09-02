@@ -26,6 +26,7 @@ Tool | Flag | Notes
 [Eclipse STS](https://spring.io/tools/sts) | --sts |
 [Node.js](https://nodejs.org), [Bower](http://bower.io/), [Grunt CLI](http://gruntjs.com), [Gulp CLI](http://gulpjs.com) | --nodejs |
 [Predix CLI](https://github.com/PredixDev/predix-cli) | --predixcli |
+[Predix Mobile CLI](https://github.com/PredixDev/predix-mobile-cli) | --mobilecli |
 [Python3](https://www.python.org) | --python3 |
 [rbenv](http://rbenv.org), [ruby-build](https://github.com/rbenv/ruby-build), [ruby](https://www.ruby-lang.org), [cf-uaac] (https://github.com/cloudfoundry/cf-uaac) | --uaac | This is not installed by default
 
@@ -52,6 +53,7 @@ Tool | Flag | Notes
 [cURL](https://curl.haxx.se) | /curl |
 [Node.js](https://nodejs.org), [Bower](http://bower.io/), [Grunt CLI](http://gruntjs.com), [Gulp CLI](http://gulpjs.com) | /nodejs |
 [Predix CLI](https://github.com/PredixDev/predix-cli) | /predixcli |
+[Predix Mobile CLI](https://github.com/PredixDev/predix-mobile-cli) | /mobilecli |
 [Python2](https://www.python.org) | /python2 |
 [Python3](https://www.python.org) | /python3 |
 
