@@ -7,11 +7,12 @@ jdk=2
 maven=3
 sts=4
 nodejs=5
-python3=6
-uaac=7
-jq=8
-predixcli=9
-mobilecli=10
+python2=6
+python3=7
+uaac=8
+jq=9
+predixcli=10
+mobilecli=11
 
 declare -a install
 
@@ -92,6 +93,7 @@ function install_everything() {
   install[maven]=1
   install[sts]=1
   install[nodejs]=1
+  install[python2]=1
   install[python3]=1
   install[uaac]=0 # Install UAAC only if the --uaac flag is provided
   install[jq]=1
@@ -106,6 +108,7 @@ function install_nothing() {
   install[maven]=0
   install[sts]=0
   install[nodejs]=0
+  install[python2]=0
   install[python3]=0
   install[uaac]=0
   install[jq]=0
@@ -165,6 +168,12 @@ function install_nodejs() {
 function install_python3() {
   brew_install python3
   python3 --version
+}
+
+function install_python2() {
+  brew_install python2
+  python2 --version
+
 }
 
 function install_jq() {
@@ -272,6 +281,7 @@ function run_setup() {
       [ "$1" == "--maven" ] && install[maven]=1
       [ "$1" == "--sts" ] && install[sts]=1
       [ "$1" == "--nodejs" ] && install[nodejs]=1
+      [ "$1" == "--python2" ] && install[python2]=1
       [ "$1" == "--python3" ] && install[python3]=1
       [ "$1" == "--uaac" ] && install[uaac]=1
       [ "$1" == "--jq" ] && install[jq]=1
@@ -316,6 +326,9 @@ function run_setup() {
 
   if [ ${install[python3]} -eq 1 ]; then
     install_python3
+  fi
+  if [ ${install[python2]} -eq 1 ]; then
+    install_python2
   fi
 
   if [ ${install[uaac]} -eq 1 ]; then
