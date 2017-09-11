@@ -94,6 +94,7 @@ IF NOT !errorlevel! EQU 0 (
   CALL :CHOCO_INSTALL 7zip.commandline 7z
   REM get the url of the release file
   (curl -s -L https://api.github.com/repos/PredixDev/predix-cli/releases >output.tmp )
+  <output.tmp ( jq -r ".[0].assets[0].browser_download_url" >output2.tmp )
   SET /p cli_url=<output2.tmp
   @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','predix-cli.tar.gz')"
   7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
@@ -131,6 +132,7 @@ GOTO :eof
   CALL :CHOCO_INSTALL 7zip.commandline 7z
   REM get the url of the release file
   (curl -s -L https://api.github.com/repos/PredixDev/predix-cli/releases >output.tmp )
+  <output.tmp ( jq -r ".[0].assets[0].browser_download_url" >output2.tmp )
   SET /p cli_url=<output2.tmp
   @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','predix-cli.tar.gz')"
   7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
@@ -152,6 +154,7 @@ IF NOT !errorlevel! EQU 0 (
   REM get the url of the release file
   (curl -s -L https://api.github.com/repos/PredixDev/predix-mobile-cli/releases >output.tmp )
   <output.tmp ( jq -r "[ .[] | select(.prerelease==false) ] | .[0].assets[]  |  select(.name | contains(\"win\")) | .browser_download_url" >output2.tmp )
+  <output.tmp ( jq -r ".[0].assets[0].browser_download_url" >output2.tmp )
   <output2.tmp (SET /p cli_url=)
   @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','pm.zip')"
   7z x "pm.zip" -o"mobile-cli"
