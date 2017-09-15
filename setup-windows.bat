@@ -2,6 +2,7 @@
 SETLOCAL ENABLEDELAYEDEXPANSION
 
 SET RESETVARS=https://raw.githubusercontent.com/PredixDev/local-setup/master/resetvars.vbs
+SET DOWNLOADFILE=https://raw.githubusercontent.com/PredixDev/local-setup/master/downloadFile.ps1
 
 GOTO START
 
@@ -23,7 +24,8 @@ IF /I "%1"=="/putty" SET install[putty]=1
 IF /I "%1"=="/jdk" SET install[jdk]=1
 IF /I "%1"=="/maven" SET install[maven]=1
 IF /I "%1"=="/sts" SET install[sts]=1
-IF /I "%1"=="/curl" SET install[curl]=1
+rem curl is not reliable on windows command window
+rem IF /I "%1"=="/curl" SET install[curl]=1
 IF /I "%1"=="/nodejs" SET install[nodejs]=1
 IF /I "%1"=="/python2" SET install[python2]=1
 IF /I "%1"=="/python3" SET install[python3]=1
@@ -40,6 +42,8 @@ GOTO :eof
   ECHO Getting Dependencies
   ECHO !RESETVARS!
   @powershell -Command "(new-object net.webclient).DownloadFile('!RESETVARS!','%TEMP%\resetvars.vbs')"
+  ECHO !DOWNLOADFILE!
+  @powershell -Command "(new-object net.webclient).DownloadFile('!DOWNLOADFILE!','downloadFile.ps1')"
 GOTO :eof
 
 :RELOAD_ENV
@@ -93,19 +97,20 @@ IF NOT !errorlevel! EQU 0 (
   CALL :GET_DEPENDENCIES
   CALL :CHOCO_INSTALL 7zip.commandline 7z
   REM get the url of the release file
-  (curl -s -L https://api.github.com/repos/PredixDev/predix-cli/releases >output.tmp )
+  @powershell -Command "& { . .\downloadFile.ps1; DownloadFile 'https://api.github.com/repos/PredixDev/predix-cli/releases' 'output.tmp' }"
   <output.tmp ( jq -r ".[0].assets[0].browser_download_url" >output2.tmp )
   SET /p cli_url=<output2.tmp
   @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','predix-cli.tar.gz')"
   7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
   REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
   copy predix-cli\bin\win64\predix.exe %ALLUSERSPROFILE%\chocolatey\bin\
+  echo "mklink if not already there"
   mklink %ALLUSERSPROFILE%\chocolatey\bin\px.exe %ALLUSERSPROFILE%\chocolatey\bin\predix.exe
   ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
 ) ELSE (
   predix -v >pxcliv.tmp
   SET /p predixcli_current_version=<pxcliv.tmp
-  (curl -s -L -k https://api.github.com/repos/PredixDev/predix-cli/releases >releaseresponse.tmp )
+  @powershell -Command "& { . .\downloadFile.ps1; DownloadFile 'https://api.github.com/repos/PredixDev/predix-cli/releases' 'releaseresponse.tmp' }"
   <releaseresponse.tmp (jq -r ".[0].tag_name" >releaseresponsename.tmp)
   <releaseresponsename.tmp (SET /p cli_latest_tag=)
   SET cli_latest_tag=!cli_latest_tag:~1!
@@ -126,18 +131,19 @@ predix -v
 GOTO :eof
 
 :UPGRADE_PREDIXCLI
-  ECHO Installing predixcli...
+  ECHO Upgrading predixcli...
   ECHO Downloading installer
   CALL :GET_DEPENDENCIES
   CALL :CHOCO_INSTALL 7zip.commandline 7z
   REM get the url of the release file
-  (curl -s -L https://api.github.com/repos/PredixDev/predix-cli/releases >output.tmp )
+  @powershell -Command "& { . .\downloadFile.ps1; DownloadFile 'https://api.github.com/repos/PredixDev/predix-cli/releases' 'output.tmp' }"
   <output.tmp ( jq -r ".[0].assets[0].browser_download_url" >output2.tmp )
   SET /p cli_url=<output2.tmp
   @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','predix-cli.tar.gz')"
   7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
   REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
   copy predix-cli\bin\win64\predix.exe %ALLUSERSPROFILE%\chocolatey\bin\
+  echo "mklink if not already there"
   mklink %ALLUSERSPROFILE%\chocolatey\bin\px.exe %ALLUSERSPROFILE%\chocolatey\bin\predix.exe
   ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
 GOTO :eof
@@ -152,7 +158,7 @@ IF NOT !errorlevel! EQU 0 (
   CALL :GET_DEPENDENCIES
   CALL :CHOCO_INSTALL 7zip.commandline 7z
   REM get the url of the release file
-  (curl -s -L https://api.github.com/repos/PredixDev/predix-mobile-cli/releases >output.tmp )
+  @powershell -Command "& { . .\downloadFile.ps1; DownloadFile 'https://api.github.com/repos/PredixDev/predix-mobile-cli/releases' 'output.tmp' }"
   <output.tmp ( jq -r "[ .[] | select(.prerelease==false) ] | .[0].assets[]  |  select(.name | contains(\"win\")) | .browser_download_url" >output2.tmp )
   <output.tmp ( jq -r ".[0].assets[0].browser_download_url" >output2.tmp )
   <output2.tmp (SET /p cli_url=)
@@ -183,7 +189,7 @@ SET install[putty]=0
 SET install[jdk]=0
 SET install[maven]=0
 SET install[sts]=0
-SET install[curl]=0
+rem SET install[curl]=0
 SET install[nodejs]=0
 SET install[python2]=0
 SET install[python3]=0
@@ -199,7 +205,7 @@ SET install[putty]=1
 SET install[jdk]=1
 SET install[maven]=1
 SET install[sts]=1
-SET install[curl]=1
+rem SET install[curl]=1
 SET install[nodejs]=1
 SET install[python2]=1
 SET install[python3]=1
@@ -221,13 +227,13 @@ SET putty=2
 SET jdk=3
 SET maven=4
 SET sts=5
-SET curl=6
-SET nodejs=7
-SET python2=8
-SET python3=9
-SET jq=10
-SET predixcli=11
-SET mobilecli=12
+rem SET curl=6
+SET nodejs=6
+SET python2=7
+SET python3=8
+SET jq=9
+SET predixcli=10
+SET mobilecli=11
 
 CALL :PROCESS_ARGS %*
 
@@ -265,7 +271,7 @@ IF !install[jdk]! EQU 1 CALL :CHOCO_INSTALL jdk8 javac
 IF !install[maven]! EQU 1 CALL :CHOCO_INSTALL maven mvn
 REM TODO - Uncomment once the chocolatey package is fixed
 REM IF !install[sts]! EQU 1 CALL :CHOCO_INSTALL springtoolsuite
-IF !install[curl]! EQU 1 CALL :CHOCO_INSTALL curl
+rem IF !install[curl]! EQU 1 CALL :CHOCO_INSTALL curl
 
 IF !install[nodejs]! EQU 1 CALL :CHOCO_INSTALL nodejs.install node
 CALL :RELOAD_ENV
