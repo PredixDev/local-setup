@@ -179,4 +179,7 @@ IF !install[nodejs]! EQU 1 (
 IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
 IF !install[python3]! EQU 1 CALL :CHOCO_INSTALL python3 python3
 
+ECHO .
+ECHO After script completes be sure to open a new Command window to pick up PATH changes
+ECHO .
 POPD
