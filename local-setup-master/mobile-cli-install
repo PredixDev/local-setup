@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if cf_path=$(type -p cf); then
-  echo "ensure that ~/.cf folder (if not exists yet) gets created with current user privs (not root)"
-  `cf --version`
-fi
-
-echo "Please enter your system password, so the Predix CLI can be installed using sudo."
-sudo ./mobile-cli-root-install `cf --version`

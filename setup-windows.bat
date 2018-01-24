@@ -55,7 +55,7 @@ GOTO :eof
 
 :CHECK_INTERNET_CONNECTION
 ECHO Checking internet connection...
-@powershell -Command "(new-object net.webclient).DownloadString('http://www.google.com')" >$null 2>&1
+@powershell -Command "(new-object net.webclient).DownloadString('http://www.github.com')" >$null 2>&1
 IF NOT !errorlevel! EQU 0 (
   ECHO Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy.  For detailed info about setting up your proxy please see this tutorial https://www.predix.io/resources/tutorials/tutorial-details.html?tutorial_id=1565
   exit /b !errorlevel!

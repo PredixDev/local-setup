@@ -28,7 +28,7 @@ function check_internet() {
   set +e
   echo ""
   echo "Checking internet connection..."
-  curl "http://google.com" > /dev/null 2>&1
+  curl "http://github.com" > /dev/null 2>&1
   if [ $? -ne 0 ]; then
     echo "Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy.  Please read this tutorial for detailed info about setting your proxy https://www.predix.io/resources/tutorials/tutorial-details.html?tutorial_id=1565"
     exit 1
