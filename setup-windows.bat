@@ -69,14 +69,7 @@ IF NOT !errorlevel! EQU 0 (
   ECHO Installing chocolatey...
   @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) >$null 2>&1" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
   CALL :CHECK_FAIL
-  IF EXIST C:\ProgramData\chocolatey\bin (
-    for /f %%i in ('echo "%PATH: =%"') do set STR_PATH=%%i
-    if not x%STR_PATH:chocolatey=%==x%STR_PATH% (
-      echo .
-      echo It appears that chocolatey did not make it in to the PATH, please reopen this admin window or please add C:\ProgramData\chocolatey\bin to the PATH manually
-      echo .
-    )
-  )
+  
 
 )
 GOTO :eof
