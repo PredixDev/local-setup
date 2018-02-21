@@ -303,6 +303,8 @@ IF !install[nodejs]! EQU 1 (
   IF NOT !errorlevel! EQU 0 (
     npm install -g gulp-cli
   )
+  npm install -g node-gyp
+  npm install --global --production windows-build-tools
 )
 
 IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python

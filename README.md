@@ -25,7 +25,7 @@ Tool | Flag | Notes
 [JQ)](https://stedolan.github.io/jq/) | installed in all cases |
 [Maven](https://maven.apache.org) | --maven |
 [Eclipse STS](https://spring.io/tools/sts) | --sts |
-[Node.js](https://nodejs.org), [Bower](http://bower.io/), [Grunt CLI](http://gruntjs.com), [Gulp CLI](http://gulpjs.com) | --nodejs |
+[Node.js](https://nodejs.org), [Bower](http://bower.io/), [Grunt CLI](http://gruntjs.com), [Gulp CLI](http://gulpjs.com),[node gyp]https://github.com/nodejs/node-gyp,[windows-build-tools] (npm install --global --production windows-build-tools)  | --nodejs |
 [Predix CLI](https://github.com/PredixDev/predix-cli) | --predixcli |
 [Predix Mobile CLI](https://github.com/PredixDev/predix-mobile-cli) | --mobilecli |
 [Python2](https://www.python.org) | --python2 |
