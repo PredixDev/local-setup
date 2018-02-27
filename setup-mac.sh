@@ -252,7 +252,7 @@ function update_predixcli() {
     curl -L -O "$cli_url"
     mkdir -p predix-cli && tar -xf predix-cli.tar.gz -C predix-cli
     echo "Please enter your system password, so the Predix CLI can be installed using sudo."
-    sudo ./install
+    ./install
   fi
 
 }
