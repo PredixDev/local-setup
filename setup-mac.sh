@@ -232,6 +232,10 @@ function install_predixcli() {
     echo "Downloading latest Predix CLI: $cli_url"
     curl -L -O "$cli_url"
     mkdir -p predix-cli && tar -xf predix-cli.tar.gz -C predix-cli
+    if [ -e predix-cli ]; then
+      #tar -C is supposed to change directory but it doesn't sometimes
+      cd predix-cli
+    fi
     ./install
   fi
 }
@@ -251,7 +255,10 @@ function update_predixcli() {
     echo "Downloading latest Predix CLI: $cli_url"
     curl -L -O "$cli_url"
     mkdir -p predix-cli && tar -xf predix-cli.tar.gz -C predix-cli
-    echo "Please enter your system password, so the Predix CLI can be installed using sudo."
+    if [ -e predix-cli ]; then
+      #tar -C is supposed to change directory but it doesn't sometimes
+      cd predix-cli
+    fi
     ./install
   fi
 
