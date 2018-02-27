@@ -232,10 +232,7 @@ function install_predixcli() {
     echo "Downloading latest Predix CLI: $cli_url"
     curl -L -O "$cli_url"
     mkdir -p predix-cli && tar -xf predix-cli.tar.gz -C predix-cli
-    if [ -e predix-cli ]; then
-      cd predix-cli
-    fi
-    ./predix-cli/install
+    ./install
   fi
 }
 
@@ -254,11 +251,8 @@ function update_predixcli() {
     echo "Downloading latest Predix CLI: $cli_url"
     curl -L -O "$cli_url"
     mkdir -p predix-cli && tar -xf predix-cli.tar.gz -C predix-cli
-    if [ -e predix-cli ]; then
-      cd predix-cli
-    fi
     echo "Please enter your system password, so the Predix CLI can be installed using sudo."
-    sudo ./predix-cli/install
+    sudo ./install
   fi
 
 }
