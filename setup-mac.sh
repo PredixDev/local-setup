@@ -232,6 +232,9 @@ function install_predixcli() {
     echo "Downloading latest Predix CLI: $cli_url"
     curl -L -O "$cli_url"
     mkdir -p predix-cli && tar -xf predix-cli.tar.gz -C predix-cli
+    if [ -e predix-cli ]; then
+      cd predix-cli
+    fi
     ./predix-cli/install
   fi
 }
