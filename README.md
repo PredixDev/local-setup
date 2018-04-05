@@ -19,18 +19,18 @@ bash <( curl https://raw.githubusercontent.com/PredixDev/local-setup/master/setu
 Tool | Flag | Notes
 --- | --- | ---
 [brew](http://brew.sh), [cask] (http://caskroom.io) | | Required to manage the installation of tools
-[Git](https://git-scm.com) | --git |
+[Android Studio & Platform Tools](https://developer.android.com/studio/index.html) | --androidstudio |
 [Cloud Foundry CLI](http://docs.cloudfoundry.org/cf-cli) | --cf |
+[Eclipse STS](https://spring.io/tools/sts) | --sts |
+[Git](https://git-scm.com) | --git |
 [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) | --jdk |
 [JQ)](https://stedolan.github.io/jq/) | installed in all cases |
 [Maven](https://maven.apache.org) | --maven |
-[Eclipse STS](https://spring.io/tools/sts) | --sts |
 [Node.js](https://nodejs.org), [Bower](http://bower.io/), [Grunt CLI](http://gruntjs.com), [Gulp CLI](http://gulpjs.com),[node gyp]https://github.com/nodejs/node-gyp,[windows-build-tools] (npm install --global --production windows-build-tools)  | --nodejs |
 [Predix CLI](https://github.com/PredixDev/predix-cli) | --predixcli |
 [Predix Mobile CLI](https://github.com/PredixDev/predix-mobile-cli) | --mobilecli |
 [Python2](https://www.python.org) | --python2 |
 [Python3](https://www.python.org) | --python3 |
-[Android Studio](https://developer.android.com/studio/index.html) | --androidstudio |
 [rbenv](http://rbenv.org), [ruby-build](https://github.com/rbenv/ruby-build), [ruby](https://www.ruby-lang.org), [cf-uaac] (https://github.com/cloudfoundry/cf-uaac) | --uaac | This is not installed by default
 
 ### On Windows
@@ -47,19 +47,19 @@ For example: to install git and cf-cli only run
 Tool | Flag | Notes
 --- | --- | ---
 [chocolatey](https://chocolatey.org) | | Required to manage the installation of tools
-[Git](https://git-scm.com) | /git |
+[Android Studio & ADB](https://developer.android.com/studio/index.html) | /androidstudio |
 [Cloud Foundry CLI](http://docs.cloudfoundry.org/cf-cli) | /cf |
-[putty](http://www.putty.org) | /putty |
+[cURL](https://curl.haxx.se) | /curl |
+[Eclipse STS](https://spring.io/tools/sts) | /sts |
+[Git](https://git-scm.com) | /git |
 [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) | /jdk |
 [JQ)](https://stedolan.github.io/jq/) | installed in all cases |
 [Maven](https://maven.apache.org) | /maven |
-[Eclipse STS](https://spring.io/tools/sts) | /sts |
-[cURL](https://curl.haxx.se) | /curl |
 [Node.js](https://nodejs.org), [Bower](http://bower.io/), [Grunt CLI](http://gruntjs.com), [Gulp CLI](http://gulpjs.com) | /nodejs |
 [Predix CLI](https://github.com/PredixDev/predix-cli) | /predixcli |
 [Predix Mobile CLI](https://github.com/PredixDev/predix-mobile-cli) | /mobilecli |
 [Python2](https://www.python.org) | /python2 |
 [Python3](https://www.python.org) | /python3 |
-[Android Studio](https://developer.android.com/studio/index.html) | /androidstudio |
+[putty](http://www.putty.org) | /putty |
 
 [![Analytics](https://ga-beacon.appspot.com/UA-82773213-1/local-setup/readme?pixel)](https://github.com/PredixDev)

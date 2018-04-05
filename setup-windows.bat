@@ -1,8 +1,9 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
 
+echo branch=!BRANCH!
+REM SET RESETVARS=https://raw.githubusercontent.com/PredixDev/local-setup/!BRANCH!/resetvars.vbs
 SET RESETVARS=https://raw.githubusercontent.com/PredixDev/local-setup/master/resetvars.vbs
-SET DOWNLOADFILE=https://raw.githubusercontent.com/PredixDev/local-setup/master/downloadFile.ps1
 
 GOTO START
 
@@ -41,10 +42,7 @@ GOTO :eof
 
 :GET_DEPENDENCIES
   ECHO Getting Dependencies
-  ECHO !RESETVARS!
-  @powershell -Command "(new-object net.webclient).DownloadFile('!RESETVARS!','%TEMP%\resetvars.vbs')"
-  ECHO !DOWNLOADFILE!
-  @powershell -Command "(new-object net.webclient).DownloadFile('!DOWNLOADFILE!','downloadFile.ps1')"
+  CALL :DOWNLOAD_TO_FILE !RESETVARS! , %TEMP%\resetvars.vbs
 GOTO :eof
 
 :RELOAD_ENV
@@ -55,7 +53,7 @@ GOTO :eof
 
 :CHECK_INTERNET_CONNECTION
 ECHO Checking internet connection...
-@powershell -Command "(new-object net.webclient).DownloadString('http://www.github.com')" >$null 2>&1
+@powershell -Command "iwr http://bing.com" >$null 2>&1
 IF NOT !errorlevel! EQU 0 (
   ECHO Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy.  For detailed info about setting up your proxy please see this tutorial https://www.predix.io/resources/tutorials/tutorial-details.html?tutorial_id=1565
   exit /b !errorlevel!
@@ -90,98 +88,21 @@ IF NOT !errorlevel! EQU 0 (
 )
 ENDLOCAL & GOTO :eof
 
-:INSTALL_PREDIXCLI
-ECHO Installing predixcli...
-where predix >$null 2>&1
-IF NOT !errorlevel! EQU 0 (
-  ECHO Downloading installer
-  CALL :GET_DEPENDENCIES
-  CALL :CHOCO_INSTALL 7zip.commandline 7z
-  REM get the url of the release file
-  @powershell -Command "& { . .\downloadFile.ps1; DownloadFile 'https://api.github.com/repos/PredixDev/predix-cli/releases' 'output.tmp' }"
-  <output.tmp ( jq -r ".[0].assets[0].browser_download_url" >output2.tmp )
-  SET /p cli_url=<output2.tmp
-  @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','predix-cli.tar.gz')"
-  7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
-  REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
-  copy predix-cli\bin\win64\predix.exe %ALLUSERSPROFILE%\chocolatey\bin\
-  echo "mklink if not already there"
-  mklink %ALLUSERSPROFILE%\chocolatey\bin\px.exe %ALLUSERSPROFILE%\chocolatey\bin\predix.exe
-  ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
-) ELSE (
-  predix -v >pxcliv.tmp
-  SET /p predixcli_current_version=<pxcliv.tmp
-  @powershell -Command "& { . .\downloadFile.ps1; DownloadFile 'https://api.github.com/repos/PredixDev/predix-cli/releases' 'releaseresponse.tmp' }"
-  <releaseresponse.tmp (jq -r ".[0].tag_name" >releaseresponsename.tmp)
-  <releaseresponsename.tmp (SET /p cli_latest_tag=)
-  SET cli_latest_tag=!cli_latest_tag:~1!
-  echo.!predixcli_current_version!|findstr /C:!cli_latest_tag! >nul 2>&1
-  if not errorlevel 1 (
-    ECHO PREDIX CLI is current
-  ) else (
-    ECHO Upgrading Predix CLI to version  !cli_latest_tag!
-    CALL :UPGRADE_PREDIXCLI
-  )
-  ECHO Predix CLI already installed, predix is installed at...
-  where predix
-  ECHO Predix CLI already installed, px shortcut is installed at...
-  where px
-  ECHO Predix CLI version is as follows, please check for updates at https://github.com/PredixDev/predix-cli
-)
-predix -v
-GOTO :eof
-
-:UPGRADE_PREDIXCLI
-  ECHO Upgrading predixcli...
-  ECHO Downloading installer
-  CALL :GET_DEPENDENCIES
-  CALL :CHOCO_INSTALL 7zip.commandline 7z
-  REM get the url of the release file
-  @powershell -Command "& { . .\downloadFile.ps1; DownloadFile 'https://api.github.com/repos/PredixDev/predix-cli/releases' 'output.tmp' }"
-  <output.tmp ( jq -r ".[0].assets[0].browser_download_url" >output2.tmp )
-  SET /p cli_url=<output2.tmp
-  @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','predix-cli.tar.gz')"
-  7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
-  REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
-  copy predix-cli\bin\win64\predix.exe %ALLUSERSPROFILE%\chocolatey\bin\
-  echo "mklink if not already there"
-  mklink %ALLUSERSPROFILE%\chocolatey\bin\px.exe %ALLUSERSPROFILE%\chocolatey\bin\predix.exe
-  ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
-GOTO :eof
-
-:INSTALL_ANDROID_STUDIO
-  ECHO Installing Android Studio...
-  CALL :CHOCO_INSTALL maven mvn
-  CALL :CHOCO_INSTALL ant
-  CALL :CHOCO_INSTALL gradle
-
-  CALL :CHOCO_INSTALL androidstudio
+:DOWNLOAD_TO_FILE 
+  ECHO download to file
+  ECHO %~1 %~2
+  REM arg1 is URL, arg2 is filename to redirect output to
+  @powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $response = iwr -uri %~1; write-output $response.Content | Out-File %~2 ASCII -Width 9999"
   CALL :CHECK_FAIL
+  REM echo return from check_fail
 GOTO :eof
 
-:INSTALL_MOBILECLI
-ECHO Installing mobilecli...
-where pm >$null 2>&1
-IF NOT !errorlevel! EQU 0 (
-  ECHO Downloading installer
-  CALL :GET_DEPENDENCIES
-  CALL :CHOCO_INSTALL 7zip.commandline 7z
-  REM get the url of the release file
-  @powershell -Command "& { . .\downloadFile.ps1; DownloadFile 'https://api.github.com/repos/PredixDev/predix-mobile-cli/releases' 'output.tmp' }"
-  <output.tmp ( jq -r "[ .[] | select(.prerelease==false) ] | .[0].assets[]  |  select(.name | contains(\"win\")) | .browser_download_url" >output2.tmp )
-  <output.tmp ( jq -r ".[0].assets[0].browser_download_url" >output2.tmp )
-  <output2.tmp (SET /p cli_url=)
-  @powershell -Command "(new-object net.webclient).DownloadFile('!cli_url!','pm.zip')"
-  7z x "pm.zip" -o"mobile-cli"
-  REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
-  copy mobile-cli\pm.exe %ALLUSERSPROFILE%\chocolatey\bin\
-  ECHO Mobile CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
-) ELSE (
-  ECHO Mobile CLI already installed, pm is installed at...
-  where pm
-  ECHO Mobile CLI version is as follows, please check for updates at https://github.com/PredixDev/predix-mobile-cli
-)
-rem pm -v
+:DOWNLOAD_BINARY_TO_FILE
+  ECHO download binary to file
+  ECHO %~1 %~2
+  REM arg1 is URL, arg2 is filename to redirect output to
+  @powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;  (new-object net.webclient).DownloadFile('%~1','%~2')
+  CALL :CHECK_FAIL    
 GOTO :eof
 
 :CHECK_FAIL
@@ -190,7 +111,7 @@ IF NOT !errorlevel! EQU 0 (
   ECHO Any changes to the PATH will not take affect unless you reopen a new Admin command window, please open a new window now.
   exit /b !errorlevel!
 )
-GOTO :eof
+GOTO :EOF
 
 :INSTALL_NOTHING
 SET install[git]=0
@@ -225,6 +146,115 @@ SET install[predixcli]=1
 SET install[mobilecli]=1
 SET install[androidstudio]=0
 GOTO :eof
+
+
+:INSTALL_PREDIXCLI
+ECHO.
+ECHO Installing predixcli...
+where predix >$null 2>&1
+IF NOT !errorlevel! EQU 0 (
+  ECHO Downloading installer
+  CALL :CHOCO_INSTALL 7zip.commandline 7z
+  REM get the url of the release file
+  CALL :DOWNLOAD_TO_FILE https://api.github.com/repos/PredixDev/predix-cli/releases , predix-cli-output.tmp
+  <predix-cli-output.tmp ( jq -r ".[0].assets[0].browser_download_url" >predix-cli-output2.tmp )
+  SET /p cli_url=<predix-cli-output2.tmp
+  CALL :DOWNLOAD_TO_FILE https://api.github.com/repos/PredixDev/predix-cli/releases , predix-cli-output.tmp
+
+  CALL :DOWNLOAD_BINARY_TO_FILE !cli_url! , predix-cli.tar.gz
+  7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
+  REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
+  copy /Y predix-cli\bin\win64\predix.exe %ALLUSERSPROFILE%\chocolatey\bin\
+  echo "mklink if not already there"
+  mklink %ALLUSERSPROFILE%\chocolatey\bin\px.exe %ALLUSERSPROFILE%\chocolatey\bin\predix.exe
+  echo mkdir C:\Progra~1\Git\etc\bash_completion.d\predix
+  mkdir C:\Progra~1\Git\etc\bash_completion.d\predix
+  echo copy /Y predix-cli\autocomplete\bash_autocomplete C:\Progra~1\Git\etc\bash_completion.d\predix\bash_autocomplete.sh
+  copy /Y predix-cli\autocomplete\bash_autocomplete C:\Progra~1\Git\etc\bash_completion.d\predix\bash_autocomplete.sh
+  echo add to %HOMEPATH%\.bashrc
+  echo . /etc/bash_completion.d/predix/bash_autocomplete.sh >> %HOMEPATH%\.bashrc
+  ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
+) ELSE (
+  ECHO check for upgrade
+  predix -v >pxcliv.tmp
+  SET /p predixcli_current_version=<pxcliv.tmp
+  CALL :DOWNLOAD_TO_FILE https://api.github.com/repos/PredixDev/predix-cli/releases , predix-cli-release-response.tmp
+  <predix-cli-release-response.tmp (jq -r ".[0].tag_name" >predix-cli-release-response-name.tmp)
+  <predix-cli-release-response-name.tmp (SET /p cli_latest_tag=)
+  SET cli_latest_tag=!cli_latest_tag:~1!
+  echo.!predixcli_current_version!|findstr /C:!cli_latest_tag! >nul 2>&1
+  if not errorlevel 1 (
+    ECHO PREDIX CLI is current
+  ) else (
+    ECHO Upgrading Predix CLI to version  !cli_latest_tag!
+    CALL :UPGRADE_PREDIXCLI
+  )
+  ECHO Predix CLI already installed, predix is installed at...
+  where predix
+  ECHO Predix CLI already installed, px shortcut is installed at...
+  where px
+  ECHO Predix CLI version is as follows, please check for updates at https://github.com/PredixDev/predix-cli
+)
+predix -v
+GOTO :eof
+
+:UPGRADE_PREDIXCLI
+  ECHO Upgrading predixcli...
+  ECHO Downloading installer
+  CALL :CHOCO_INSTALL 7zip.commandline 7z
+  REM get the url of the release file
+  CALL :DOWNLOAD_TO_FILE https://api.github.com/repos/PredixDev/predix-cli/releases , predix-cli-output.tmp
+  <predix-cli-output.tmp ( jq -r ".[0].assets[0].browser_download_url" >predix-cli-output2.tmp )
+  SET /p cli_url=<predix-cli-output2.tmp
+  CALL :DOWNLOAD_BINARY_TO_FILE !cli_url! , predix-cli.tar.gz
+  7z x "predix-cli.tar.gz" -so | 7z x -aoa -si -ttar -o"predix-cli"
+  REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
+  copy /Y predix-cli\bin\win64\predix.exe %ALLUSERSPROFILE%\chocolatey\bin\
+  echo "mklink if not already there"
+  mklink %ALLUSERSPROFILE%\chocolatey\bin\px.exe %ALLUSERSPROFILE%\chocolatey\bin\predix.exe
+  mkdir C:\Progra~1\Git\etc\bash_completion.d\predix
+  copy /Y predix-cli\autocomplete\bash_autocomplete C:\Progra~1\Git\etc\bash_completion.d\predix\bash_autocomplete.sh
+  echo . /etc/bash_completion.d/predix/bash_autocomplete.sh >> %HOMEPATH%\.bashrc
+  ECHO Predix CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
+GOTO :eof
+
+:INSTALL_ANDROID_STUDIO
+  ECHO.
+  ECHO Installing Android Studio...
+  CALL :CHOCO_INSTALL maven
+  CALL :CHOCO_INSTALL ant
+  CALL :CHOCO_INSTALL gradle
+
+  CALL :CHOCO_INSTALL androidstudio -y
+  CALL :CHOCO_INSTALL adb
+  ECHO Installing Android Studio complete...
+GOTO :eof
+
+:INSTALL_MOBILECLI
+ECHO.
+ECHO Installing mobilecli...
+where pm >$null 2>&1
+IF NOT !errorlevel! EQU 0 (
+  ECHO Downloading installer
+  CALL :CHOCO_INSTALL 7zip.commandline 7z
+  REM get the url of the release file
+  CALL :DOWNLOAD_TO_FILE https://api.github.com/repos/PredixDev/predix-mobile-cli/releases , mobile-output.tmp
+  <mobile-output.tmp ( jq -r "[ .[] | select(.prerelease==false) ] | .[0].assets[]  |  select(.name | contains(\"win\")) | .browser_download_url" >mobile-output2.tmp )
+  <mobile-output2.tmp (SET /p cli_url=)
+  CALL :DOWNLOAD_BINARY_TO_FILE !cli_url! , pm.zip
+  del /Q /S mobile-cli
+  7z x "pm.zip" -o"mobile-cli"
+  REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
+  copy mobile-cli\pm.exe %ALLUSERSPROFILE%\chocolatey\bin\
+  ECHO Mobile CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
+) ELSE (
+  ECHO Mobile CLI already installed, pm is installed at...
+  where pm
+  ECHO Mobile CLI version is as follows, please check for updates at https://github.com/PredixDev/predix-mobile-cli
+)
+rem pm -v
+GOTO :eof
+
 
 :START
 PUSHD "%~dp0"
@@ -287,28 +317,60 @@ REM TODO - Uncomment once the chocolatey package is fixed
 REM IF !install[sts]! EQU 1 CALL :CHOCO_INSTALL springtoolsuite
 rem IF !install[curl]! EQU 1 CALL :CHOCO_INSTALL curl
 
-IF !install[nodejs]! EQU 1 CALL :CHOCO_INSTALL nodejs.install node
+IF !install[nodejs]! EQU 1 (
+  ECHO.
+  ECHO Install Node.js
+  CALL :CHOCO_INSTALL nodejs.install node
+)
 CALL :RELOAD_ENV
 SET "PATH=%PATH%;%APPDATA%\npm"
 IF !install[nodejs]! EQU 1 (
+  ECHO "ensure npm global location (typically C:\Users\YourUserName\AppData\Roaming\npm) is in the path.  If not, please add manually in System and reopen this Admin Command window."
+  path
+  ECHO.
+  ECHO 'If you get a certificate error, it could mean your company network and/or proxy server is using self signed certificates.  You can temporily use   npm config set strict-ssl false to allow the download or also try npm config set cafile="C:\mycacert.pem"'
+  ECHO.
   where bower >$null 2>&1
   IF NOT !errorlevel! EQU 0 (
+    ECHO npm install -g bower
     npm install -g bower
+    CALL :CHECK_FAIL
   )
   where grunt >$null 2>&1
   IF NOT !errorlevel! EQU 0 (
+    ECHO npm install -g grunt
     npm install -g grunt-cli
+    CALL :CHECK_FAIL
   )
   where gulp >$null 2>&1
   IF NOT !errorlevel! EQU 0 (
+    ECHO npm install -g gulp
+    path
     npm install -g gulp-cli
+    CALL :CHECK_FAIL
   )
-  npm install -g node-gyp
-  npm install --global --production windows-build-tools
+  where node-gyp >$null 2>&1
+  IF NOT !errorlevel! EQU 0 (
+    ECHO npm install -g node-gyp
+    path
+    npm install -g node-gyp
+    CALL :CHECK_FAIL    
+    ECHO npm install -g --production windows-build-tools
+    npm install --g --production windows-build-tools
+    CALL :CHECK_FAIL
+  )
 )
 
-IF !install[python2]! EQU 1 CALL :CHOCO_INSTALL python2 python
-IF !install[python3]! EQU 1 CALL :CHOCO_INSTALL python3 python3
+IF !install[python2]! EQU 1 (
+  ECHO.
+  ECHO install python2
+  CALL :CHOCO_INSTALL python2 python
+)
+IF !install[python3]! EQU 1 ( 
+  ECHO.
+  ECHO install python3
+  CALL :CHOCO_INSTALL python3 python3
+)
 
 IF !install[predixcli]! EQU 1 (
   CALL :INSTALL_PREDIXCLI

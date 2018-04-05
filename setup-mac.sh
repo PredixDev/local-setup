@@ -160,6 +160,7 @@ function install_android_studio() {
 
   # Install Android Studio dependencies
   brew_cask_install android-studio
+  brew cask install android-platform-tools
 }
 
 function install_nodejs() {
