@@ -270,16 +270,17 @@ function install_mobilecli() {
     echo "Predix Mobile CLI already installed."
     pm
   else
-    #cli_url=$(curl -g -s -L https://api.github.com/repos/PredixDev/predix-mobile-cli/releases | jq -r '.' )
     cli_url=$(curl -g -s -L https://api.github.com/repos/PredixDev/predix-mobile-cli/releases | jq -r '[ .[] | select(.prerelease==false) ] | .[0].assets[]  |  select(.name | contains("Mac")) | .browser_download_url' )
-    cli_install_url="https://raw.githubusercontent.com/PredixDev/local-setup/mobile-cli-install.sh"
-    #cli_install_url="https://raw.githubusercontent.com/PredixDev/local-setup/develop/mobile-cli-install.sh"
+    cli_install_url="https://raw.githubusercontent.com/PredixDev/local-setup/master/mobile-cli-install"
+    cli_root_install_url="https://raw.githubusercontent.com/PredixDev/local-setup/master/mobile-cli-root-install"
     echo "Downloading latest Predix Mobile CLI: $cli_url"
     curl -L "$cli_url" -o pm.zip
     mkdir -p mobile-cli && tar -xf pm.zip -C mobile-cli
     cd mobile-cli
     curl -L -O "$cli_install_url"
     chmod +x mobile-cli-install
+    curl -L -O "$cli_root_install_url"
+    chmod +x mobile-cli-root-install
     echo "Please enter your system password, so the Predix Mobile CLI can be installed using sudo."
     sudo ./mobile-cli-install
   fi
