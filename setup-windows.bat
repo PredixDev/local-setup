@@ -53,7 +53,7 @@ GOTO :eof
 
 :CHECK_INTERNET_CONNECTION
 ECHO Checking internet connection...
-@powershell -Command "iwr http://bing.com" >$null 2>&1
+@powershell -Command "iwr http://bing.com -UseBasicParsing" >$null 2>&1
 IF NOT !errorlevel! EQU 0 (
   ECHO Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy.  For detailed info about setting up your proxy please see this tutorial https://www.predix.io/resources/tutorials/tutorial-details.html?tutorial_id=1565
   exit /b !errorlevel!
@@ -92,7 +92,7 @@ ENDLOCAL & GOTO :eof
   ECHO download to file
   ECHO %~1 %~2
   REM arg1 is URL, arg2 is filename to redirect output to
-  @powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $response = iwr -uri %~1; write-output $response.Content | Out-File %~2 ASCII -Width 9999"
+  @powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $response = iwr -UseBasicParsing -uri %~1; write-output $response.Content | Out-File %~2 ASCII -Width 9999"
   CALL :CHECK_FAIL
   REM echo return from check_fail
 GOTO :eof

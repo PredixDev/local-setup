@@ -5,5 +5,5 @@ if cf_path=$(type -p cf); then
   `cf --version`
 fi
 
-echo "Please enter your system password, so the Predix CLI can be installed using sudo."
+echo "Please enter your system password, so the Mobile CLI can be installed using sudo."
 sudo ./mobile-cli-root-install `cf --version`

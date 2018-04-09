@@ -11,8 +11,8 @@ checkRoot() {
 }
 
 requireCfCli() {
-  #echo "Mobile CLI requires Cloud Foundry CLI version 6.17 or later."
-  #echo "Install the latest Cloud Foundry CLI from https://github.com/cloudfoundry/cli/releases"
+  echo "Mobile CLI requires Cloud Foundry CLI version 6.17 or later."
+  echo "Install the latest Cloud Foundry CLI from https://github.com/cloudfoundry/cli/releases"
   exit 1
 }
 
@@ -22,7 +22,7 @@ readonly DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 if ! cf_path=$(type -p cf); then
   requireCfCli
 else
-	version=$1
+	version=$3
 	majorversion=`echo "$version" | sed 's/^[^0-9]*\([0-9][0-9]*\)\..*$/\1/'`
 	minorversion=`echo "$version" | sed 's/^[^0-9]*[0-9][0-9]*\.\([0-9][0-9]*\).*$/\1/'`
   if ! [[ $majorversion =~ ^[0-9]+$ ]] ||  ! [[ $minorversion =~ ^[0-9]+$ ]]; then
