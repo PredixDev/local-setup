@@ -285,8 +285,7 @@ function install_mobilecli() {
     curl -L -O "$cli_install_root_url"
     chmod +x mobile-cli-install
     chmod +x mobile-cli-root-install
-    echo "Please enter your system password, so the Predix Mobile CLI can be installed using sudo."
-    sudo ./mobile-cli-install
+    ./mobile-cli-install
   fi
 }
 
