@@ -38,7 +38,7 @@ pipeline {
   stages {
     stage("Checkout" ) {
       agent {
-          label 'windows2016-raw’
+          label 'windows2016-raw'
       }
       steps {
         echo "The workspace is ${env.WORKSPACE}"	    
