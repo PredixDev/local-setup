@@ -107,7 +107,7 @@ GOTO :eof
 
 :CHECK_FAIL
 IF NOT !errorlevel! EQU 0 (
-  ECHO FAILED
+  ECHO FAILED !errorlevel!
   ECHO Any changes to the PATH will not take affect unless you reopen a new Admin command window, please open a new window now.
   exit /b !errorlevel!
 )
@@ -225,6 +225,7 @@ GOTO :eof
   CALL :CHOCO_INSTALL ant
   CALL :CHOCO_INSTALL gradle
 
+  CALL :CHOCO_INSTALL android-sdk -y
   CALL :CHOCO_INSTALL androidstudio -y
   CALL :CHOCO_INSTALL adb
   ECHO Installing Android Studio complete...
