@@ -47,8 +47,11 @@ pipeline {
         echo "The workspace is ${env.WORKSPACE}"	    
         script {
           echo 'Stage Build, Test, Deploy'
+          bat "dir"
+          // bat "del /s /q *"
+          // bat "dir"
           def status = powershell(returnStatus: true, script: "cd")
-          status = powershell(returnStatus: true, script: "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/PredixDev/local-setup/master/setup-windows.bat','setup-windows.bat')")
+          // status = powershell(returnStatus: true, script: "(new-object net.webclient).DownloadFile('https://raw.githubusercontent.com/PredixDev/local-setup/master/setup-windows.bat','setup-windows.bat')")
           if (status == 0) {
             echo "powershell1 success"
             bat "echo %cd%"
@@ -58,7 +61,7 @@ pipeline {
               echo "powershell2 success"
             }
             else {
-              echo "powershell2 failed"
+              echo "powershell2 failed status=${status}"
               error("powershell2 failed")
             }
           }

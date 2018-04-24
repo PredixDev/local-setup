@@ -88,6 +88,24 @@ IF NOT !errorlevel! EQU 0 (
 )
 ENDLOCAL & GOTO :eof
 
+:NPM_INSTALL_GLOBAL
+  SETLOCAL
+  SET tool=%1
+  SET cmd=%1
+  IF NOT "%2"=="" (
+    SET cmd=%2
+  )
+  where !cmd! >$null 2>&1
+  IF NOT !errorlevel! EQU 0 (
+    ECHO npm install -g %1
+    npm install -g %1
+    CALL :CHECK_FAIL
+  ) ELSE (
+    ECHO %1 already installed
+    ECHO.
+  )
+ENDLOCAL & GOTO :eof
+
 :DOWNLOAD_TO_FILE 
   ECHO download to file
   ECHO %~1 %~2
@@ -106,11 +124,12 @@ GOTO :eof
 GOTO :eof
 
 :CHECK_FAIL
-IF NOT !errorlevel! EQU 0 (
-  ECHO FAILED !errorlevel!
-  ECHO Any changes to the PATH will not take affect unless you reopen a new Admin command window, please open a new window now.
-  exit /b !errorlevel!
-)
+  ECHO CHECK_FAIL errorlevel: !errorlevel!
+  IF NOT !errorlevel! EQU 0 (
+    ECHO FAILED !errorlevel!
+    ECHO Any changes to the PATH will not take affect unless you reopen a new Admin command window, please open a new window now.
+    exit /b !errorlevel!
+  )
 GOTO :EOF
 
 :INSTALL_NOTHING
@@ -232,29 +251,29 @@ GOTO :eof
 GOTO :eof
 
 :INSTALL_MOBILECLI
-ECHO.
-ECHO Installing mobilecli...
-where pm >$null 2>&1
-IF NOT !errorlevel! EQU 0 (
-  ECHO Downloading installer
-  CALL :CHOCO_INSTALL 7zip.commandline 7z
-  REM get the url of the release file
-  CALL :DOWNLOAD_TO_FILE https://api.github.com/repos/PredixDev/predix-mobile-cli/releases , mobile-output.tmp
-  <mobile-output.tmp ( jq -r "[ .[] | select(.prerelease==false) ] | .[0].assets[]  |  select(.name | contains(\"win\")) | .browser_download_url" >mobile-output2.tmp )
-  <mobile-output2.tmp (SET /p cli_url=)
-  CALL :DOWNLOAD_BINARY_TO_FILE !cli_url! , pm.zip
-  del /Q /S mobile-cli
-  7z x "pm.zip" -o"mobile-cli"
-  REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
-  copy mobile-cli\pm.exe %ALLUSERSPROFILE%\chocolatey\bin\
-  ECHO Mobile CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
-) ELSE (
-  ECHO Mobile CLI already installed, pm is installed at...
-  where pm
-  ECHO Mobile CLI version is as follows, please check for updates at https://github.com/PredixDev/predix-mobile-cli
-)
-rem pm -v
-GOTO :eof
+  ECHO.
+  ECHO Installing mobilecli...
+  where pm >$null 2>&1
+  IF NOT !errorlevel! EQU 0 (
+    ECHO Downloading installer
+    CALL :CHOCO_INSTALL 7zip.commandline 7z
+    REM get the url of the release file
+    CALL :DOWNLOAD_TO_FILE https://api.github.com/repos/PredixDev/predix-mobile-cli/releases , mobile-output.tmp
+    <mobile-output.tmp ( jq -r "[ .[] | select(.prerelease==false) ] | .[0].assets[]  |  select(.name | contains(\"win\")) | .browser_download_url" >mobile-output2.tmp )
+    <mobile-output2.tmp (SET /p cli_url=)
+    CALL :DOWNLOAD_BINARY_TO_FILE !cli_url! , pm.zip
+    IF EXIST mobile-cli\ del /Q /S mobile-cli
+    7z x "pm.zip" -o"mobile-cli"
+    REM Just put in the chocolatey/bin directory, since we know that's on the PATH env var.
+    copy mobile-cli\pm.exe %ALLUSERSPROFILE%\chocolatey\bin\
+    ECHO Mobile CLI installed here: %ALLUSERSPROFILE%\chocolatey\bin\
+  ) ELSE (
+    ECHO Mobile CLI already installed, pm is installed at...
+    where pm
+    ECHO Mobile CLI version is as follows, please check for updates at https://github.com/PredixDev/predix-mobile-cli
+  )
+  rem pm -v
+ GOTO :eof
 
 
 :START
@@ -322,44 +341,22 @@ IF !install[nodejs]! EQU 1 (
   ECHO.
   ECHO Install Node.js
   CALL :CHOCO_INSTALL nodejs.install node
+  node -v
 )
 CALL :RELOAD_ENV
 SET "PATH=%PATH%;%APPDATA%\npm"
 IF !install[nodejs]! EQU 1 (
+  ECHO Install node tools
   ECHO "ensure npm global location (typically C:\Users\YourUserName\AppData\Roaming\npm) is in the path.  If not, please add manually in System and reopen this Admin Command window."
   path
   ECHO.
   ECHO 'If you get a certificate error, it could mean your company network and/or proxy server is using self signed certificates.  You can temporily use   npm config set strict-ssl false to allow the download or also try npm config set cafile="C:\mycacert.pem"'
   ECHO.
-  where bower >$null 2>&1
-  IF NOT !errorlevel! EQU 0 (
-    ECHO npm install -g bower
-    npm install -g bower
-    CALL :CHECK_FAIL
-  )
-  where grunt >$null 2>&1
-  IF NOT !errorlevel! EQU 0 (
-    ECHO npm install -g grunt
-    npm install -g grunt-cli
-    CALL :CHECK_FAIL
-  )
-  where gulp >$null 2>&1
-  IF NOT !errorlevel! EQU 0 (
-    ECHO npm install -g gulp
-    path
-    npm install -g gulp-cli
-    CALL :CHECK_FAIL
-  )
-  where node-gyp >$null 2>&1
-  IF NOT !errorlevel! EQU 0 (
-    ECHO npm install -g node-gyp
-    path
-    npm install -g node-gyp
-    CALL :CHECK_FAIL    
-    ECHO npm install -g --production windows-build-tools
-    npm install --g --production windows-build-tools
-    CALL :CHECK_FAIL
-  )
+  CALL :NPM_INSTALL_GLOBAL gulp-cli gulp
+  CALL :NPM_INSTALL_GLOBAL grunt-cli grunt
+  CALL :NPM_INSTALL_GLOBAL bower
+  REM npm install -g node-gyp
+  REM npm install --g --production windows-build-tools
 )
 
 IF !install[python2]! EQU 1 (
