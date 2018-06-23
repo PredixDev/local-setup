@@ -14,6 +14,8 @@ jq=9
 predixcli=10
 mobilecli=11
 androidstudio=12
+docker=13
+vmware=14
 
 declare -a install
 
@@ -101,6 +103,8 @@ function install_everything() {
   install[predixcli]=1
   install[mobilecli]=1
   install[androidstudio]=0 # Install Android Studio only if --androidstudio flag is provided
+  install[docker]=1
+  install[vmware]=0 # Install Android Studio only if --vmware flag is provided
 }
 
 function install_nothing() {
@@ -117,6 +121,8 @@ function install_nothing() {
   install[predixcli]=0
   install[mobilecli]=0
   install[androidstudio]=0
+  install[docker]=0
+  install[vmware]=0
 }
 
 function install_git() {
@@ -163,6 +169,17 @@ function install_android_studio() {
   brew cask install android-platform-tools
 }
 
+function install_docker() {
+  # Install Docker dependencies
+  brew_cask_install docker
+  echo "Run the Docker app found in the Applications folder and docker CLI commands will also be available."
+}
+
+function install_vmware() {
+  brew_cask_install vmware
+  echo "Run the VMWare app found in the Applications folder"
+}
+
 function install_nodejs() {
   brew_install node
   node -v
@@ -185,12 +202,13 @@ function install_nodejs() {
 function install_python3() {
   brew_install python3
   python3 --version
+  sudo easy_install pip
 }
 
 function install_python2() {
   brew_install python2
   python2 --version
-
+  sudo easy_install pip
 }
 
 function install_jq() {
@@ -315,6 +333,8 @@ function run_setup() {
       [ "$1" == "--predixcli" ] && install[predixcli]=1
       [ "$1" == "--mobilecli" ] && install[mobilecli]=1
       [ "$1" == "--androidstudio" ] && install[androidstudio]=1
+      [ "$1" == "--docker" ] && install[docker]=1
+      [ "$1" == "--vmware" ] && install[vmware]=1
       shift
     done
     install[jq]=1
@@ -373,6 +393,14 @@ function run_setup() {
 
   if [ ${install[androidstudio]} -eq 1 ]; then
     install_android_studio
+  fi
+
+  if [ ${install[docker]} -eq 1 ]; then
+    install_docker
+  fi
+
+  if [ ${install[vmware]} -eq 1 ]; then
+    install_vmware
   fi
 }
 

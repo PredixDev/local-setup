@@ -1,3 +1,4 @@
+SET install[docker]=0
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
 
@@ -34,6 +35,8 @@ IF /I "%1"=="/jq" SET install[jq]=1
 IF /I "%1"=="/predixcli" SET install[predixcli]=1
 IF /I "%1"=="/mobilecli" SET install[mobilecli]=1
 IF /I "%1"=="/androidstudio" SET install[androidstudio]=1
+IF /I "%1"=="/docker" SET install[docker]=1
+IF /I "%1"=="/vmware" SET install[vmware]=1
 SHIFT
 GOTO loop_process_args
 :end_loop_process_args
@@ -106,7 +109,7 @@ ENDLOCAL & GOTO :eof
   )
 ENDLOCAL & GOTO :eof
 
-:DOWNLOAD_TO_FILE 
+:DOWNLOAD_TO_FILE
   ECHO download to file
   ECHO %~1 %~2
   REM arg1 is URL, arg2 is filename to redirect output to
@@ -120,7 +123,7 @@ GOTO :eof
   ECHO %~1 %~2
   REM arg1 is URL, arg2 is filename to redirect output to
   @powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;  (new-object net.webclient).DownloadFile('%~1','%~2')
-  CALL :CHECK_FAIL    
+  CALL :CHECK_FAIL
 GOTO :eof
 
 :CHECK_FAIL
@@ -147,6 +150,8 @@ SET install[jq]=0
 SET install[predixcli]=0
 SET install[mobilecli]=0
 SET install[androidstudio]=0
+SET install[docker]=0
+SET install[vmware]=0
 GOTO :eof
 
 :INSTALL_EVERYTHING
@@ -164,6 +169,8 @@ SET install[jq]=1
 SET install[predixcli]=1
 SET install[mobilecli]=1
 SET install[androidstudio]=0
+SET install[docker]=0
+SET install[vmware]=0
 GOTO :eof
 
 
@@ -250,6 +257,20 @@ GOTO :eof
   ECHO Installing Android Studio complete...
 GOTO :eof
 
+:INSTALL_DOCKER
+  ECHO.
+  ECHO Installing Docker...
+  CALL :CHOCO_INSTALL docker-for-windows
+  ECHO Installing Docker complete, from Start menu launch the Docker For Windows app.  Then try docker commands from command line or git-bash terminal window.
+GOTO :eof
+
+:INSTALL_VMWARE
+  ECHO.
+  ECHO Installing VMWare Workstation...
+  CALL :CHOCO_INSTALL vmwareworkstation
+  ECHO Installing VMWare Workstation complete...
+GOTO :eof
+
 :INSTALL_MOBILECLI
   ECHO.
   ECHO Installing mobilecli...
@@ -297,6 +318,8 @@ SET jq=9
 SET predixcli=10
 SET mobilecli=11
 SET androidstudio=12
+SET docker=13
+SET vmware=14
 
 CALL :PROCESS_ARGS %*
 
@@ -364,7 +387,7 @@ IF !install[python2]! EQU 1 (
   ECHO install python2
   CALL :CHOCO_INSTALL python2 python
 )
-IF !install[python3]! EQU 1 ( 
+IF !install[python3]! EQU 1 (
   ECHO.
   ECHO install python3
   CALL :CHOCO_INSTALL python3 python3
@@ -381,6 +404,13 @@ IF !install[androidstudio]! EQU 1 (
   CALL :INSTALL_ANDROID_STUDIO
 )
 
+IF !install[docker]! EQU 1 (
+  CALL :INSTALL_DOCKER
+)
+
+IF !install[vmware]! EQU 1 (
+  CALL :INSTALL_VMWARE
+)
 POPD
 ECHO.
 ECHO Installation of tools completed. If your script has completed, close this administrator command window and open a new non-administrator prompt and proceed.
