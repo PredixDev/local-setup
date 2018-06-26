@@ -157,16 +157,16 @@ function install_nodejs() {
   echo "--------------------------------------------------------------"
   echo "Installing NodeJs..."
   # brew_install node
-  # Normally the command above would be fine, unfortunately the current environment requires node 6.10.1 and brew installs, by default, the latest stable version. 
-  # We still install with brew but we also install a node verison manager 'n' to activate version 6.10.1.
+  # Normally the command above would be fine, unfortunately the current environment requires node 8.11.3 and brew installs, by default, the latest stable version. 
+  # We still install with brew but we also install a node version manager 'n' to activate version 8.11.3.
   brew_install node
   echo "Installing NPM..."
   brew_install npm
   npm -v
   echo "Installing Node Manager..."
   npm install -g n
-  echo "Setting Node to v6.10.1..."
-  n 6.10.1
+  echo "Setting Node to v8.11.3..."
+  n 8.11.3
   node -v
 
   echo "--------------------------------------------------------------"
@@ -209,7 +209,7 @@ function install_wct() {
   echo "--------------------------------------------------------------"
   echo "Installing Polymer web component tester..."
   sudo chown -R $USER /usr/local
-  npm install -g https://github.com/Polymer/web-component-tester.git#v4.2.2
+  npm install -g https://github.com/Polymer/web-component-tester.git#v6.7.0
   npm install web-component-tester-istanbul -g
 }
 

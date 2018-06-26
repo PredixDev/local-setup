@@ -170,7 +170,7 @@ function install_redis() {
 
 function install_wct() {
   # Install the Polymer web-components-tester
-  npm install -g https://github.com/Polymer/web-component-tester.git#v4.2.2
+  npm install -g https://github.com/Polymer/web-component-tester.git#v6.7.0
   sudo chown -R $USER /usr/local
   npm install web-component-tester-istanbul -g 
 }
