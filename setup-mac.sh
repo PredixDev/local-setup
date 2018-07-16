@@ -176,7 +176,7 @@ function install_docker() {
 }
 
 function install_vmware() {
-  brew_cask_install vmware
+  brew_cask_install vmware-fusion
   echo "Run the VMWare app found in the Applications folder"
 }
 
