@@ -332,7 +332,7 @@ IF !install[jq]! EQU 1 CALL :CHOCO_INSTALL jq
 IF !install[git]! EQU 1 CALL :CHOCO_INSTALL git
 
 IF !install[cf]! EQU 1 (
-  CALL :CHOCO_INSTALL cloudfoundry-cli cf
+  CALL :CHOCO_INSTALL cloudfoundry-cli
   CALL :RELOAD_ENV
 
   SETLOCAL
@@ -340,16 +340,6 @@ IF !install[cf]! EQU 1 (
     SET filename=predix_win64.exe
   ) ELSE (
   SET filename=predix_win32.exe
-  )
-  ( cf plugins | findstr "Predix" >$null 2>&1 ) || cf install-plugin -f https://github.com/PredixDev/cf-predix/releases/download/1.0.0/!filename!
-  ENDLOCAL
-
-  IF NOT !errorlevel! EQU 0 (
-    ECHO If you are behind a corporate proxy, set the 'http_proxy' and 'https_proxy' environment variables.
-    ECHO Commands to set proxy:
-    ECHO set http_proxy="http://<proxy-host>:<proxy-port>"
-    ECHO set https_proxy="http://<proxy-host>:<proxy-port>"
-    exit /b !errorlevel!
   )
 )
 
