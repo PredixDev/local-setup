@@ -68,7 +68,7 @@ GOTO :eof
 where choco >$null 2>&1
 IF NOT !errorlevel! EQU 0 (
   ECHO Installing chocolatey...
-  @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) >$null 2>&1" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+  @powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
   CALL :CHECK_FAIL
 )
 GOTO :eof
