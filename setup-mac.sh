@@ -33,6 +33,7 @@ function check_internet() {
   curl "http://github.com" > /dev/null 2>&1
   if [ $? -ne 0 ]; then
     echo "Unable to connect to internet, make sure you are connected to a network and check your proxy settings if behind a corporate proxy.  Please read this tutorial for detailed info about setting your proxy https://www.predix.io/resources/tutorials/tutorial-details.html?tutorial_id=1565"
+    echo ""
     exit 1
   fi
   echo "OK"
@@ -48,6 +49,39 @@ function check_bash_profile() {
 
   # This is required for brew to work
   prefix_to_path /usr/local/bin
+}
+
+function get_proxy_scripts() {
+  VERIFY_PROXY_URL=https://raw.githubusercontent.com/PredixDev/predix-scripts/master/bash/common/proxy/verify-proxy.sh
+  TOGGLE_PROXY_URL=https://raw.githubusercontent.com/PredixDev/predix-scripts/master/bash/common/proxy/toggle-proxy.sh
+  ENABLE_XSL_URL=https://raw.githubusercontent.com/PredixDev/predix-scripts/master/bash/common/proxy/enable-proxy.xsl
+  DISABLE_XSL_URL=https://raw.githubusercontent.com/PredixDev/predix-scripts/master/bash/common/proxy/disable-proxy.xsl
+
+  if [ -f "verify-proxy.sh" ]; then
+    rm verify-proxy.sh
+  fi
+  if [ -f "toggle-proxy.sh" ]; then
+    rm toggle-proxy.sh
+  fi
+  if [ -f "enable-proxy.xsl" ]; then
+    rm enable-proxy.xsl
+  fi
+  if [ -f "disable-proxy.xsl" ]; then
+    rm disable-proxy.xsl
+  fi
+
+  if [ ! -f "verify-proxy.sh" ]; then
+    curl -s -O $VERIFY_PROXY_URL
+  fi
+  if [ ! -f "toggle-proxy.sh" ]; then
+    curl -s -O $TOGGLE_PROXY_URL
+  fi
+  if [ ! -f "enable-proxy.xsl" ]; then
+    curl -s -O $ENABLE_XSL_URL
+  fi
+  if [ ! -f "disable-proxy.xsl" ]; then
+    curl -s -O $DISABLE_XSL_URL
+  fi
 }
 
 function install_brew_cask() {
@@ -396,3 +430,10 @@ function run_setup() {
 }
 
 run_setup $@
+# Running Proxy Scripts
+echo
+echo "Pulling proxy scripts from predix-scripts"
+get_proxy_scripts
+echo
+echo "Running verify-proxy.sh"
+source verify-proxy.sh
