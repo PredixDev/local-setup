@@ -134,6 +134,7 @@ function install_everything() {
   install[python3]=1
   install[uaac]=0 # Install UAAC only if the --uaac flag is provided
   install[jq]=1
+  install[yq]=1
   install[predixcli]=1
   install[mobilecli]=1
   install[androidstudio]=0 # Install Android Studio only if --androidstudio flag is provided
@@ -152,6 +153,7 @@ function install_nothing() {
   install[python3]=0
   install[uaac]=0
   install[jq]=0
+  install[yq]=0
   install[predixcli]=0
   install[mobilecli]=0
   install[androidstudio]=0
@@ -239,6 +241,11 @@ function install_python2() {
 function install_jq() {
   brew_install jq
   jq --version
+}
+
+function install_yq() {
+  brew_install yq
+  yq --version
 }
 
 function install_uaac() {
@@ -355,6 +362,7 @@ function run_setup() {
       [ "$1" == "--python3" ] && install[python3]=1
       [ "$1" == "--uaac" ] && install[uaac]=1
       [ "$1" == "--jq" ] && install[jq]=1
+      [ "$1" == "--yq" ] && install[yq]=1
       [ "$1" == "--predixcli" ] && install[predixcli]=1
       [ "$1" == "--mobilecli" ] && install[mobilecli]=1
       [ "$1" == "--androidstudio" ] && install[androidstudio]=1
@@ -371,6 +379,10 @@ function run_setup() {
 
   if [ ${install[jq]} -eq 1 ]; then
     install_jq
+  fi
+
+  if [ ${install[yq]} -eq 1 ]; then
+    install_yq
   fi
 
   if [ ${install[git]} -eq 1 ]; then
