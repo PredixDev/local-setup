@@ -37,6 +37,7 @@ IF /I "%1"=="/mobilecli" SET install[mobilecli]=1
 IF /I "%1"=="/androidstudio" SET install[androidstudio]=1
 IF /I "%1"=="/docker" SET install[docker]=1
 IF /I "%1"=="/vmware" SET install[vmware]=1
+IF /I "%1"=="/yq" SET install[yq]=1
 SHIFT
 GOTO loop_process_args
 :end_loop_process_args
@@ -152,6 +153,7 @@ SET install[mobilecli]=0
 SET install[androidstudio]=0
 SET install[docker]=0
 SET install[vmware]=0
+SET install[yq]=0
 GOTO :eof
 
 :INSTALL_EVERYTHING
@@ -171,6 +173,7 @@ SET install[mobilecli]=1
 SET install[androidstudio]=0
 SET install[docker]=0
 SET install[vmware]=0
+SET install[yq]=1
 GOTO :eof
 
 
@@ -320,6 +323,7 @@ SET mobilecli=11
 SET androidstudio=12
 SET docker=13
 SET vmware=14
+SET yq=15
 
 CALL :PROCESS_ARGS %*
 
@@ -376,11 +380,16 @@ IF !install[python2]! EQU 1 (
   ECHO.
   ECHO install python2
   CALL :CHOCO_INSTALL python2 python
+  CALL :CHOCO_INSTALL pip
+  SET "PATH=%PATH%;C:\Python27\Scripts
 )
 IF !install[python3]! EQU 1 (
   ECHO.
   ECHO install python3
   CALL :CHOCO_INSTALL python3 python3
+  CALL :CHOCO_INSTALL pip
+  SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolate
+  SET "PATH=%PATH%;C:\Python37\Scripts
 )
 
 IF !install[predixcli]! EQU 1 (
@@ -401,6 +410,13 @@ IF !install[docker]! EQU 1 (
 IF !install[vmware]! EQU 1 (
   CALL :INSTALL_VMWARE
 )
+
+IF !install[yq]! EQU 1 (
+  ECHO.
+  ECHO install yq
+  pip install yq
+)
+
 POPD
 ECHO.
 ECHO Installation of tools completed. If your script has completed, close this administrator command window and open a new non-administrator prompt and proceed.
