@@ -66,4 +66,4 @@ Tool | Flag | Notes
 [putty](http://www.putty.org) | /putty |
 [VMWare](https://www.vmware.com/products/workstation-pro/workstation-pro-evaluation.html) | /vmware |
 
-[![Analytics](https://ga-beacon.appspot.com/UA-82773213-1/local-setup/readme?pixel)](https://github.com/PredixDev)
+[![Analytics](https://predix-beacon.appspot.com/UA-82773213-1/local-setup/readme?pixel)](https://github.com/PredixDev)
