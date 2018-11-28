@@ -5,17 +5,16 @@ git=0
 cf=1
 jdk=2
 maven=3
-sts=4
-nodejs=5
-python2=6
-python3=7
-uaac=8
-jq=9
-predixcli=10
-mobilecli=11
-androidstudio=12
-docker=13
-vmware=14
+nodejs=4
+python2=5
+python3=6
+uaac=7
+jq=8
+predixcli=9
+mobilecli=10
+androidstudio=11
+docker=12
+vmware=13
 
 declare -a install
 
@@ -128,7 +127,6 @@ function install_everything() {
   install[cf]=1
   install[jdk]=1
   install[maven]=1
-  install[sts]=1
   install[nodejs]=1
   install[python2]=1
   install[python3]=1
@@ -147,7 +145,6 @@ function install_nothing() {
   install[cf]=0
   install[jdk]=0
   install[maven]=0
-  install[sts]=0
   install[nodejs]=0
   install[python2]=0
   install[python3]=0
@@ -273,6 +270,7 @@ function install_uaac() {
 }
 
 function install_predixcli() {
+  export DYLD_INSERT_LIBRARIES=;
   if which predix > /dev/null; then
     echo "Predix CLI already installed."
     predix -v
@@ -356,7 +354,6 @@ function run_setup() {
       [ "$1" == "--cf" ] && install[cf]=1
       [ "$1" == "--jdk" ] && install[jdk]=1
       [ "$1" == "--maven" ] && install[maven]=1
-      [ "$1" == "--sts" ] && install[sts]=1
       [ "$1" == "--nodejs" ] && install[nodejs]=1
       [ "$1" == "--python2" ] && install[python2]=1
       [ "$1" == "--python3" ] && install[python3]=1
@@ -399,10 +396,6 @@ function run_setup() {
 
   if [ ${install[maven]} -eq 1 ]; then
     install_maven
-  fi
-
-  if [ ${install[sts]} -eq 1 ]; then
-    brew_cask_install sts
   fi
 
   if [ ${install[nodejs]} -eq 1 ]; then
