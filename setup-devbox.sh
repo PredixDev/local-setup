@@ -45,9 +45,6 @@ function check_bash_profile() {
   if [ ! -e ~/.bash_profile ]; then
     printf "#!/bin/bash\n" >> ~/.bash_profile
   fi
-
-  # This is required for brew to work
-  prefix_to_path /usr/local/bin
 }
 
 function get_proxy_scripts() {
@@ -83,48 +80,6 @@ function get_proxy_scripts() {
   fi
 }
 
-function install_brew_cask() {
-  # Install brew and cask
-  if which brew > /dev/null; then
-    echo "brew already installed, tapping cask, this may take a full minute"
-  else
-    echo "Installing brew and cask, this may take a few minutes"
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-  fi
-  brew tap caskroom/cask
-}
-
-function brew_install() {
-  echo "--------------------------------------------------------------"
-  TOOL=$1
-  COMMAND=$1
-  if [ $# -eq 2 ]; then
-    COMMAND=$2
-  fi
-
-  if which $COMMAND > /dev/null; then
-    echo "$TOOL already installed"
-  else
-    echo "Installing $TOOL"
-    brew install $TOOL
-
-    # Adding validation to check for installation failures
-    STATUS=$?
-    check_status
-  fi
-}
-
-function brew_cask_install() {
-  echo "--------------------------------------------------------------"
-  TOOL=$1
-
-  if brew cask list | grep $TOOL > /dev/null; then
-    echo "$TOOL already installed"
-  else
-    echo "Installing $TOOL"
-    brew cask install $TOOL
-  fi
-}
 
 function install_everything() {
   install[git]=1
@@ -162,116 +117,11 @@ function install_nothing() {
   install[vmware]=0
 }
 
-function install_git() {
-  brew_install git
-  git --version
-}
-
-function install_cf() {
-  brew tap cloudfoundry/tap
-  brew_install cf-cli cf
-  cf -v
-}
-
-function install_jdk() {
-  brew_cask_install java
-  javac -version
-}
-
-function install_maven() {
-  brew_install maven mvn
-  mvn -v
-}
-
-function install_android_studio() {
-  echo "--------------------------------------------------------------"
-  echo "Android Studio will require Maven, Ant, and Gradle"
-
-  # Install tools used by Android Studio
-  install_maven
-  brew_install ant
-  brew_install gradle
-
-  # Install Android Studio dependencies
-  brew_cask_install android-studio
-  brew cask install android-platform-tools
-}
-
-function install_docker() {
-  # Install Docker dependencies
-  brew_cask_install docker
-  echo "Run the Docker app found in the Applications folder and docker CLI commands will also be available."
-}
-
-function install_vmware() {
-  brew_cask_install vmware-fusion
-  echo "Run the VMWare app found in the Applications folder"
-}
-
-function install_nodejs() {
-  brew_install node
-  node -v
-  echo -ne "\nnpm "
-  npm -v
-
-  type bower > /dev/null || npm install -g bower
-  echo -ne "\nbower "
-  bower -v
-
-  type grunt > /dev/null || npm install -g grunt-cli
-  grunt --version
-
-  type gulp > /dev/null || npm install -g gulp-cli
-  echo -ne "\ngulp "
-  gulp --version
-  echo "node install complete"
-}
-
-function install_python3() {
-  brew_install python3
-  python3 --version
-  sudo easy_install pip
-}
-
-function install_python2() {
-  brew_install python2
-  python2 --version
-  sudo easy_install pip
-}
-
-function install_jq() {
-  brew_install jq
-  jq --version
-}
-
 function install_yq() {
-  brew_install yq
+  sudo pip install yq
   yq --version
 }
 
-function install_uaac() {
-  # Install tools for managing ruby
-  brew_install rbenv
-  brew_install ruby-build
-  # Add rbenv to bash
-  grep -q -F 'rbenv init' ~/.bash_profile || echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile && eval "$(rbenv init -)"
-  # Install latest ruby
-  RUBY_VERSION=`egrep "^\s+\d+\.\d+\.\d+$" <(rbenv install -l) | tail -1 | tr -d '[[:space:]]'`
-  echo "--------------------------------------------------------------"
-  if grep -q "$RUBY_VERSION" <(ruby -v); then
-    echo "Already running latest version of ruby"
-  else
-    echo "Installing latest ruby"
-    rbenv install $RUBY_VERSION
-    rbenv global $RUBY_VERSION
-  fi
-  ruby -v
-
-  # Install UAAC
-  echo "--------------------------------------------------------------"
-  echo "Installing UAAC gem"
-  gem install cf-uaac
-}
 
 function install_predixcli() {
   export DYLD_INSERT_LIBRARIES=;
@@ -376,10 +226,9 @@ function run_setup() {
 
   check_internet
   check_bash_profile
-  install_brew_cask
 
   if [ ${install[jq]} -eq 1 ]; then
-    install_jq
+    echo "jq already installed"
   fi
 
   if [ ${install[yq]} -eq 1 ]; then
@@ -387,34 +236,34 @@ function run_setup() {
   fi
 
   if [ ${install[git]} -eq 1 ]; then
-    install_git
+    echo "git already installed"
   fi
 
   if [ ${install[cf]} -eq 1 ]; then
-    install_cf
+    echo "cf already installed"
   fi
 
   if [ ${install[jdk]} -eq 1 ]; then
-    install_jdk
+    echo "jdk already installed"
   fi
 
   if [ ${install[maven]} -eq 1 ]; then
-    install_maven
+    echo "maven already installed"
   fi
 
   if [ ${install[nodejs]} -eq 1 ]; then
-    install_nodejs
+    echo "nodejs already installed"
   fi
 
   if [ ${install[python3]} -eq 1 ]; then
-    install_python3
+    echo "python3 already installed"
   fi
   if [ ${install[python2]} -eq 1 ]; then
-    install_python2
+    echo "python2 already installed"
   fi
 
   if [ ${install[uaac]} -eq 1 ]; then
-    install_uaac
+    echo "uaac not supported"
   fi
 
   if [ ${install[predixcli]} -eq 1 ]; then
@@ -422,26 +271,23 @@ function run_setup() {
   fi
 
   if [ ${install[mobilecli]} -eq 1 ]; then
-    install_mobilecli
+    echo "mobile cli already installed"
   fi
 
   if [ ${install[androidstudio]} -eq 1 ]; then
-    install_android_studio
+    echo "android studio already installed"
   fi
 
   if [ ${install[docker]} -eq 1 ]; then
-    install_docker
+    echo "docker already installed"
   fi
 
-  if [ ${install[vmware]} -eq 1 ]; then
-    install_vmware
-  fi
 }
 
 function check_status() {
   if [ $STATUS != 0 ]; then
     echo
-  	echo "brew install for $TOOL failed"
+  	echo "install for $TOOL failed"
   	read -p "Would you like to keep going? (y/n) > " -t 300 answer
     if [[ -z $answer ]]; then
         echo -n "Specify (yes/no)> "
