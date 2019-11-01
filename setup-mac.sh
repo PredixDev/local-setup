@@ -86,12 +86,12 @@ function get_proxy_scripts() {
 function install_brew_cask() {
   # Install brew and cask
   if which brew > /dev/null; then
-    echo "brew already installed, tapping cask, this may take a full minute"
+    echo "brew already installed, installing cask, this may take a full minute"
   else
     echo "Installing brew and cask, this may take a few minutes"
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   fi
-  brew tap caskroom/cask
+  brew install cask
 }
 
 function brew_install() {
